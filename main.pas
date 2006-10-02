@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ShellApi, Buttons, Menus, ExtCtrls, AppEvnts, jpeg;
+  Dialogs, StdCtrls, ShellApi, Buttons, Menus, ExtCtrls, AppEvnts, jpeg,
+  CoolTrayIcon, TextTrayIcon, ImgList, HotKeyManager, Math;
 
 type 
   TWmMoving = record
@@ -19,69 +20,84 @@ const
 
 type
   TWork_Time = class(TForm)
-    lbl_time: TLabel;
-    btn_options: TSpeedButton;
+    lblTime: TLabel;
+    btnOptions: TSpeedButton;
     pm: TPopupMenu;
-    pm_show: TMenuItem;
-    pm_noon: TMenuItem;
-    icon_main: TImage;
-    icon_noon: TImage;
+    pmShowHide: TMenuItem;
+    pmNoon: TMenuItem;
     counter: TTimer;
-    pm_exit: TMenuItem;
-    noon_counter: TTimer;
-    btn_minimize: TSpeedButton;
-    btn_close: TSpeedButton;
+    pmExit: TMenuItem;
+    btnMinimize: TSpeedButton;
+    btnClose: TSpeedButton;
     bg: TImage;
-    btn_info: TSpeedButton;
+    btnInfo: TSpeedButton;
+    trayIcon: TCoolTrayIcon;
+    imgList: TImageList;
+    hkm: THotKeyManager;
+    appEvents: TApplicationEvents;
     procedure FormCreate(Sender: TObject);
-    procedure btn_optionsClick(Sender: TObject);
+    procedure btnOptionsClick(Sender: TObject);
     procedure counterTimer(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
-    procedure pm_noonClick(Sender: TObject);
-    procedure noon_counterTimer(Sender: TObject);
-    procedure pm_showClick(Sender: TObject);
-    procedure pm_exitClick(Sender: TObject);
-    procedure FormActivate(Sender: TObject);
-    procedure btn_minimizeClick(Sender: TObject);
-    procedure btn_closeClick(Sender: TObject);
+    procedure pmNoonClick(Sender: TObject);
+    procedure pmShowHideClick(Sender: TObject);
+    procedure pmExitClick(Sender: TObject);
+    procedure btnMinimizeClick(Sender: TObject);
+    procedure btnCloseClick(Sender: TObject);
     procedure bgMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
-    procedure lbl_timeMouseMove(Sender: TObject; Shift: TShiftState; X,
+    procedure lblTimeMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
-    procedure btn_infoClick(Sender: TObject);
-    procedure bgMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure lbl_timeMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure btnInfoClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure hkmHotKeyPressed(HotKey: Cardinal; Index: Word);
+    procedure FormActivate(Sender: TObject);
+    procedure trayIconClick(Sender: TObject);
+    procedure appEventsException(Sender: TObject; E: Exception);
+    procedure trayIconBalloonHintTimeout(Sender: TObject);
+    procedure trayIconBalloonHintClick(Sender: TObject);
   protected
-    procedure hotkey(var msg:TMessage); message WM_HOTKEY;
   private
     { Private declarations }
-    procedure Systray(var sMsg: TMessage); message IC_CLICK;
   public
     { Public declarations }
     procedure WmMoving(var Message: TWmMoving); message WM_MOVING;
+    procedure getOptions;
     procedure StartLog;
     procedure Noon;
   end;
 
 var
   Work_Time: TWork_Time;
-  NIM : TNotifyIconData;
-  log : TextFile;
+  Log : TextFile;
 
 implementation
 
-uses options, reg, info;
+uses globalDefinitions, reg, options, info;
 
 var
-  hk : Integer;
-  mHandle : THandle;
-  dir : String;
-  TickCount : Integer; //TickCount value when program started
-  noon_time : Integer; //noon time
+  mHandle:THandle;
+  StartedTick,NoonTick:Cardinal; //startedTick:program start,noonTick:noon start
+  s,m,h,wh:Double; //seconds, minutes, hours, workinghours
+  hotkeyNoon:Cardinal;
+  WtOver:Boolean; // check if the set worktime is allready over
+  // setting variables
+  LogFile:String;
+  Wt:Integer;
+  NotifyWt:Boolean;
+  NotifyWtBtTitle:String;
+  NotifyWtBtMessage:String;
+
 {$R *.dfm}
+
+procedure delay(msecs:Cardinal);
+var
+  FirstTickCount:Cardinal;
+begin
+  FirstTickCount := GetTickCount;
+  repeat
+    Application.ProcessMessages; {allowing access to other controls, etc.}
+  until ((GetTickCount-FirstTickCount) >= msecs);
+end;
 
 procedure TWork_Time.WmMoving(var Message: TWmMoving);
 var
@@ -103,204 +119,264 @@ begin
     end;
 end;
 
-procedure TWork_Time.hotkey(var msg:TMessage);
+procedure TWork_Time.getOptions;
 begin
-  if (msg.LParamLo = MOD_CONTROL + MOD_ALT) and (msg.LParamHi = VK_SPACE) then
-  pm_noon.Click;
-end;
+  LogFile := reg.getString(defRegKey,'LogFile',defLogFile);
+  if LogFile = defLogFile then reg.setString(defRegKey,'LogFile',defLogFile);
+  Wt := reg.getInteger(defRegKey,'Wt',defWt);
+  if Wt = defWt then reg.setInteger(defRegKey,'Wt',defWt);
+  NotifyWt := reg.getBoolean(defRegKey,'NotifyWt',defNotifyWt);
+  if NotifyWt = defNotifyWt then reg.setBoolean(defRegKey,'NotifyWt',defNotifyWt);
+  NotifyWtBtTitle := reg.getString(defRegKey,'NotifyWtBtTitle',defNotifyWtBtTitle);
+  if NotifyWtBtTitle = defNotifyWtBtTitle then reg.setString(defRegKey,'NotifyWtBtTitle',defNotifyWtBtTitle);
+  NotifyWtBtMessage := reg.getString(defRegKey,'NotifyWtBtMessage',defNotifyWtBtMessage);
+  if NotifyWtBtMessage = defNotifyWtBtMessage then reg.setString(defRegKey,'NotifyWtBtMessage',defNotifyWtBtMessage);
 
-procedure TWork_Time.Systray(var sMsg: TMessage);
-begin
-  inherited;
-  if (sMsg.LParam = WM_RBUTTONDOWN) then
-    pm.Popup(mouse.CursorPos.X,mouse.CursorPos.Y)
-  else
-  if (sMsg.LParam = WM_LBUTTONDBLCLK) then
-    Work_Time.Show;
+  Frm_Options.cbNotifyWt.Checked := NotifyWt;
+  Frm_Options.seWtSeconds.Value := Wt mod 60;
+  Frm_Options.seWtMinutes.Value := Wt div 60 mod 60;
+  Frm_Options.seWtHours.Value   := Wt div 60 div 60;
+  Frm_Options.seWtSeconds.Enabled := NotifyWt;
+  Frm_Options.seWtMinutes.Enabled := NotifyWt;
+  Frm_Options.seWtHours.Enabled := NotifyWt;
+  Frm_Options.editNotifyWtBtTitle.Text := NotifyWtBtTitle;
+  Frm_Options.editNotifyWtBtMessage.Text := NotifyWtBtMessage;
 end;
 
 procedure TWork_Time.Noon;
 begin
-  Append(log);
-  if pm_noon.Checked then
+  Append(Log);
+  if pmNoon.Checked then
   begin
-    noon_counter.Enabled := true;
-    counter.Enabled := false;
-    NIM.hIcon := icon_noon.Picture.Icon.Handle;
-    Shell_NotifyIcon(NIM_MODIFY, @NIM);
+    NoonTick := GetTickCount - NoonTick;
+    Counter.Enabled := false;
+    TrayIcon.IconIndex := 1;
     WriteLn(log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Noon Started');
   end
   else
   begin
-    noon_counter.Enabled := false;
-    counter.Enabled := true;
-    NIM.hIcon := icon_main.Picture.Icon.Handle;
-    Shell_NotifyIcon(NIM_MODIFY, @NIM);
-    WriteLn(log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Noon Finished');
+    NoonTick := GetTickCount - NoonTick;
+    Counter.Enabled := True;
+    TrayIcon.IconIndex := 0;
+    WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Noon Finished');
   end;
-  CloseFile(log);
+  CloseFile(Log);
 end;
 
 procedure TWork_Time.FormCreate(Sender: TObject);
 begin
-  StartLog;
-  noon_time := 0;
-  TickCount := GetTickCount; // Seconds since computer running
+  NoonTick := 0;
+  StartedTick := GetTickCount; // Seconds since computer running
 
-  //TNA
   Work_Time.FormStyle := fsStayOnTop;
-  Hide;
-  with NIM do begin
-    cbSize := SizeOf (NIM);
-    Wnd := Handle;
-    uID := 0;
-    uFlags := NIF_ICON or NIF_MESSAGE or NIF_TIP;
-    uCallbackMessage := IC_CLICK;
-    hIcon := icon_main.Picture.Icon.Handle;
-  end;
-  Shell_NotifyIcon(NIM_ADD, @NIM);
+  hkm.AddHotKey(hotkeyNoon);
 end;
 
 procedure TWork_Time.StartLog;
 begin
-  AssignFile(log, dir + '\WorkTimeLog.txt');
-  if FileExists(dir + '\WorkTimeLog.txt')
-  then Append(log)
-  else ReWrite(log, dir + '\WorkTimeLog.txt');
-  WriteLn(log, '');
-  WriteLn(log, '___' + FormatDateTime('dd:mm:yyyy', Now) + '_________________');
-  WriteLn(log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Work Started');
-  CloseFile(log);
+  AssignFile(Log, LogFile);
+  if FileExists(LogFile)
+  then Append(Log)
+  else ReWrite(Log, LogFile);
+  WriteLn(Log, '');
+  WriteLn(Log, '__ ' + FormatDateTime('dd.mm.yyyy', Now) + ' ________________');
+  WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Work Started');
+  CloseFile(Log);
 end;
 
-procedure TWork_Time.btn_optionsClick(Sender: TObject);
+procedure TWork_Time.btnOptionsClick(Sender: TObject);
+var
+  SameFile : Boolean;
 begin
-  Frm_options.lbl_directory.Caption := dir;
-  Frm_options.dlb.Directory := dir;
-  if Frm_options.ShowModal = mrOK then
-  dir := Frm_options.lbl_directory.Caption;
-  reg.SetOptions(dir);
+  Frm_Options.lblCurrentDir.Caption := LogFile;
+  Frm_Options.lblCurrentDir.Hint := LogFile;
+  Frm_Options.saveDialog.InitialDir := ExtractFilePath(LogFile);
+  if Frm_Options.ShowModal = mrOK then
+  begin
+    SameFile := (LogFile = Frm_Options.editNewDir.Text) or (Frm_Options.editNewDir.Text = '');
+    if not SameFile then
+    begin
+      if CopyFile(pChar(LogFile),pChar(Frm_options.saveDialog.FileName),False) then
+      begin
+        DeleteFile(LogFile);
+        LogFile := Frm_options.saveDialog.FileName;
+        reg.setString(defRegKey,'LogFile',LogFile);
+        StartLog;
+      end;
+    end;
+    NotifyWt := Frm_Options.cbNotifyWt.Checked;
+    reg.setBoolean(defRegKey,'NotifyWt',NotifyWt);
+    Wt := (Frm_Options.seWtHours.Value*60*60) +
+          (Frm_Options.seWtMinutes.Value*60) +
+          (Frm_Options.seWtSeconds.Value);
+    reg.setInteger(defRegKey,'Wt',Wt);
+    WtOver := False;
+
+    NotifyWtBtTitle := Frm_Options.editNotifyWtBtTitle.Text;
+    reg.setString(defRegKey,'NotifyWtBtTitle',NotifyWtBtTitle);
+    NotifyWtBtMessage := Frm_Options.editNotifyWtBtMessage.Text;
+    reg.setString(defRegKey,'NotifyWtBtMessage',NotifyWtBtMessage);
+  end;
 end;
 
 procedure TWork_Time.counterTimer(Sender: TObject);
 begin
-  text :=
-  FloatToStr(((GetTickCount - TickCount - (noon_time * 1000)) div 360000) / 10) + 'h  |  ' +
-  FloatToStr(((GetTickCount - TickCount - (noon_time * 1000)) div 6000) / 10) + 'm  |  ' +
-  IntToStr((GetTickCount - TickCount - (noon_time * 1000)) div 1000) + 's';
+  s :=  ((GetTickCount - StartedTick - NoonTick) div 1000) mod 60;
+  m :=  ((GetTickCount - StartedTick - NoonTick) div (1000*60)) mod 60;
+  h :=  ((GetTickCount - StartedTick - NoonTick) div (1000*60*60));
+  wh := ((GetTickCount - StartedTick - NoonTick) div (1000*60*6)) / 10;
 
-  StrCopy(NIM.szTip, PChar(text));
-  Shell_NotifyIcon(NIM_MODIFY, @NIM);
+  TrayIcon.Hint :=
+    FloatToStr(wh) + ' Working Hours' + #13 +
+    FloatToStr(h) + 'h ' + FloatToStr(m) + 'm ' + FloatToStr(s) + 's';
 
-  lbl_time.Caption :=
-  FloatToStr(((GetTickCount - TickCount - (noon_time * 1000)) div 360000) / 10) + #13 +
-  FloatToStr(((GetTickCount - TickCount - (noon_time * 1000)) div 6000) / 10) + #13 +
-  IntToStr((GetTickCount - TickCount - (noon_time * 1000)) div 1000);
+  lblTime.Caption := FloatToStr(h) + #13 +
+                     FloatToStr(m) + #13 +
+                     FloatToStr(s);
+
+  if NotifyWt and not WtOver then
+    if ((GetTickCount - StartedTick - NoonTick) div 1000) >= Wt then
+    begin
+      WtOver := True;
+      trayIcon.IconIndex := 2;
+      trayIcon.ShowBalloonHint(
+        NotifyWtBtTitle,
+        NotifyWtBtMessage,
+        bitInfo,
+        10);
+    end;
 end;
 
-procedure TWork_Time.FormDestroy(Sender: TObject);
+procedure TWork_Time.pmNoonClick(Sender: TObject);
 begin
-  UnRegisterHotKey(handle,hk);
-  Shell_NotifyIcon(NIM_DELETE, @NIM);
+  Noon;
 end;
 
-procedure TWork_Time.pm_noonClick(Sender: TObject);
+procedure TWork_Time.pmShowHideClick(Sender: TObject);
 begin
-  noon;
+  if Visible then
+  begin
+    pmShowHide.Caption := 'Show';
+    Hide;
+  end
+  else
+  begin
+    pmShowHide.Caption := 'Hide';
+    Show;
+  end;
 end;
 
-procedure TWork_Time.noon_counterTimer(Sender: TObject);
+procedure TWork_Time.pmExitClick(Sender: TObject);
 begin
-  inc(noon_time);
+  Close;
 end;
 
-procedure TWork_Time.pm_showClick(Sender: TObject);
+procedure TWork_Time.btnMinimizeClick(Sender: TObject);
 begin
-  Work_Time.Show;
+  Hide;
 end;
 
-procedure TWork_Time.pm_exitClick(Sender: TObject);
+procedure TWork_Time.btnCloseClick(Sender: TObject);
 begin
-  close;
-end;
-
-procedure TWork_Time.FormActivate(Sender: TObject);
-begin
-  ShowWindow(Application.Handle, SW_HIDE);
-  hk := GlobalAddAtom('HotKey_noon');
-  RegisterHotKey(handle,hk,MOD_CONTROL + MOD_ALT, VK_SPACE);
-end;
-
-procedure TWork_Time.btn_minimizeClick(Sender: TObject);
-begin
-  Work_Time.Hide;
-end;
-
-procedure TWork_Time.btn_closeClick(Sender: TObject);
-begin
-  close;
+  Close;
 end;
 
 procedure TWork_Time.bgMouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 begin
-  if (ssLeft in Shift) then begin
+  if (ssLeft in Shift) then
+  begin
     ReleaseCapture;
     SendMessage(Work_Time.Handle, WM_SYSCOMMAND, SC_MOVE+1,0);
-    end;
+  end;
 end;
 
-procedure TWork_Time.lbl_timeMouseMove(Sender: TObject; Shift: TShiftState;
+procedure TWork_Time.lblTimeMouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: Integer);
 begin
-  if (ssLeft in Shift) then begin
+  if (ssLeft in Shift) then
+  begin
     ReleaseCapture;
     SendMessage(Work_Time.Handle, WM_SYSCOMMAND, SC_MOVE+1,0);
-    end;
+  end;
 end;
 
-procedure TWork_Time.btn_infoClick(Sender: TObject);
+procedure TWork_Time.btnInfoClick(Sender: TObject);
 begin
-  Frm_info.Top := Work_Time.Top;
-  Frm_info.Left := Work_Time.Left;
-  Frm_info.ShowModal;
-end;
-
-procedure TWork_Time.bgMouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-begin
-  Frm_info.Top := Work_Time.Top;
-  Frm_info.Left := Work_Time.Left;
-end;
-
-procedure TWork_Time.lbl_timeMouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-begin
-  Frm_info.Top := Work_Time.Top;
-  Frm_info.Left := Work_Time.Left;
+  Application.CreateForm(TFrm_info, Frm_info);
+  try
+    Frm_info.ShowModal;
+  finally
+    Frm_info.Release;
+  end;
 end;
 
 procedure TWork_Time.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
-  Append(log);
+  if FileExists(logFile)
+  then Append(log)
+  else ReWrite(log, logFile);
   WriteLn(log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Work Finished');
   WriteLn(log, '------------------------------');
-  WriteLn(log, 'Total working seconds : ' + IntToStr((GetTickCount - TickCount - (noon_time * 1000)) div 1000));
-  WriteLn(log, 'Total working minutes : ' + FloatToStr(((GetTickCount - TickCount - (noon_time * 1000)) div 6000) / 10));
-  WriteLn(log, 'Total working hours   : ' + FloatToStr(((GetTickCount - TickCount - (noon_time * 1000)) div 360000) / 10));
+  WriteLn(log, 'Total working hours   : ' + FloatToStr(h));
+  WriteLn(log, 'Total working minutes : ' + FloatToStr(m));
+  WriteLn(log, 'Total working seconds : ' + FloatToStr(s));
   WriteLn(log, '------------------------------');
   CloseFile(log);
 end;
 
+procedure TWork_Time.hkmHotKeyPressed(HotKey: Cardinal; Index: Word);
+begin
+  if HotKey = hotkeyNoon then pmNoon.Click;
+end;
+
+procedure TWork_Time.FormActivate(Sender: TObject);
+begin
+  WtOver := False;
+  Work_Time.getOptions;
+  ShowWindow(Application.Handle, SW_HIDE);
+  Work_Time.Top := Screen.WorkAreaHeight - Height;
+  Work_Time.Left := Screen.WorkAreaWidth - Width;
+  StartLog;
+end;
+
+procedure TWork_Time.trayIconClick(Sender: TObject);
+begin
+  if Visible then
+  begin
+    pmShowHide.Caption := 'Show';
+    Hide;
+  end
+  else
+  begin
+    pmShowHide.Caption := 'Hide';
+    Show;
+  end;
+end;
+
+procedure TWork_Time.appEventsException(Sender: TObject; E: Exception);
+begin
+  ShowMessage(e.Message);
+end;
+
+procedure TWork_Time.trayIconBalloonHintTimeout(Sender: TObject);
+begin
+  trayIcon.IconIndex := 0;
+end;
+
+procedure TWork_Time.trayIconBalloonHintClick(Sender: TObject);
+begin
+  trayIcon.IconIndex := 0;
+end;
+
 Initialization
-  reg.CheckForOptions;
-  dir := reg.GetOptions;
+  hotkeyNoon := GetHotKey(MOD_CONTROL + MOD_ALT, VK_SPACE);
 
 // Check if WorkTime.exe is already running
   mHandle := CreateMutex(nil,True,'Work_Time');
   if GetLastError = ERROR_ALREADY_EXISTS then begin // Already running
-  halt;
+  Halt;
   end;
 
 finalization

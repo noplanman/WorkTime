@@ -1,11 +1,11 @@
-object Frm_options: TFrm_options
-  Left = 339
-  Top = 148
+object Frm_Options: TFrm_Options
+  Left = 475
+  Top = 179
   BorderIcons = []
   BorderStyle = bsSingle
   Caption = 'Options'
-  ClientHeight = 134
-  ClientWidth = 195
+  ClientHeight = 297
+  ClientWidth = 267
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,171 +15,350 @@ object Frm_options: TFrm_options
   OldCreateOrder = False
   Position = poScreenCenter
   Scaled = False
+  OnActivate = FormActivate
   PixelsPerInch = 96
   TextHeight = 13
-  object gb_options: TGroupBox
+  object gbOptions: TGroupBox
     Left = 0
     Top = 0
-    Width = 195
-    Height = 134
-    Align = alClient
+    Width = 267
+    Height = 73
+    Align = alTop
     Caption = 'Log File Directory'
-    Color = clWhite
+    Color = clSilver
     ParentColor = False
     TabOrder = 0
-    object lbl_directory: TLabel
-      Left = 100
-      Top = -1
-      Width = 15
+    object lblCurrentDir: TLabel
+      Left = 110
+      Top = 16
+      Width = 147
       Height = 13
+      Hint = 'C:\'
+      AutoSize = False
       Caption = 'C:\'
-      Visible = False
-    end
-    object btn_ok: TSpeedButton
-      Left = 160
-      Top = 112
-      Width = 16
-      Height = 16
-      Hint = 'Set Folder'
-      Flat = True
-      Glyph.Data = {
-        36060000424D3606000000000000360000002800000020000000100000000100
-        18000000000000060000120B0000120B00000000000000000000800080800080
-        8000808000808000808000808000808000808000808000808000808000808000
-        8080008080008080008080008080008080008080008080008080008080008080
-        0080800080800080800080800080800080800080800080800080800080800080
-        8000808000808000808000808000808000808000808000808000808000808000
-        8080008080008080008080008080008080008080008080008080008080008080
-        0080800080800080800080800080800080800080800080800080800080800080
-        80008095CA9193CE918000808000808000808000808000808000808000808000
-        80800080800080800080800080800080800080ADADADAFAFAF80008080008080
-        0080800080800080800080800080800080800080800080800080800080800080
-        C7FFC035932E3CA53661BE5B8000808000808000808000808000808000808000
-        80800080800080800080800080800080DFDFDF6060606D6D6D8C8C8C80008080
-        0080800080800080800080800080800080800080800080800080800080800080
-        7DD87127A01918A30C26A520A7FFAA8000808000808000808000808000808000
-        80800080800080800080800080800080A3A3A35C5C5C575757616161D3D3D380
-        0080800080800080800080800080800080800080800080800080800080C6FCC1
-        318F2434AE2455E1482FB52751BB568000808000808000808000808000808000
-        80800080800080800080800080DEDEDE5959596969699393936E6E6E85858580
-        008080008080008080008080008080008080008080008080008080008070AD6D
-        4D9B434CAB3DC0FFB249BD4235A43A76D4808000808000808000808000808000
-        808000808000808000808000808D8D8D6F6F6F737373D8D8D87F7F7F6C6C6CA3
-        A3A38000808000808000808000808000808000808000808000808000807DB97D
-        85BE7F800080800080BBFFB63DA24040A2488000808000808000808000808000
-        808000808000808000808000809B9B9B9E9E9E800080800080DADADA6F6F6F71
-        7171800080800080800080800080800080800080800080800080800080800080
-        800080800080800080800080B2F9B03B903B55AA588000808000808000808000
-        80800080800080800080800080800080800080800080800080800080D3D3D365
-        65657F7F7F800080800080800080800080800080800080800080800080800080
-        800080800080800080800080800080A1DE9A4792447CC67E8000808000808000
-        80800080800080800080800080800080800080800080800080800080800080BC
-        BCBC696969A1A1A1800080800080800080800080800080800080800080800080
-        800080800080800080800080800080800080ABDDA346894684CF918000808000
-        8080008080008080008080008080008080008080008080008080008080008080
-        0080C0C0C0676767A9A9A9800080800080800080800080800080800080800080
-        800080800080800080800080800080800080800080B6ECB74892568EDAA08000
-        8080008080008080008080008080008080008080008080008080008080008080
-        0080800080D1D1D16D6D6DB3B3B3800080800080800080800080800080800080
-        800080800080800080800080800080800080800080800080B6EFC24F8D5DA7DC
-        B180008080008080008080008080008080008080008080008080008080008080
-        0080800080800080D2D2D26E6E6EC1C1C1800080800080800080800080800080
-        800080800080800080800080800080800080800080800080800080C2EBCC86AA
-        8C80008080008080008080008080008080008080008080008080008080008080
-        0080800080800080800080D6D6D6989898800080800080800080800080800080
-        8000808000808000808000808000808000808000808000808000808000808000
-        8080008080008080008080008080008080008080008080008080008080008080
-        0080800080800080800080800080800080800080800080800080800080800080
-        8000808000808000808000808000808000808000808000808000808000808000
-        8080008080008080008080008080008080008080008080008080008080008080
-        0080800080800080800080800080800080800080800080800080}
-      NumGlyphs = 2
       ParentShowHint = False
       ShowHint = True
-      OnClick = btn_okClick
     end
-    object btn_cancel: TSpeedButton
-      Left = 176
-      Top = 112
-      Width = 16
-      Height = 16
-      Hint = 'Cancel'
-      Flat = True
-      Glyph.Data = {
-        36060000424D3606000000000000360000002800000020000000100000000100
-        18000000000000060000120B0000120B00000000000000000000800080800080
-        8000808000808000808000808000808000808000808000808000808000808000
-        8080008080008080008080008080008080008080008080008080008080008080
-        0080800080800080800080800080800080800080800080800080800080800080
-        8000808000808000808000808000808000808000808000808000808000808000
-        8080008080008080008080008080008080008080008080008080008080008080
-        0080800080800080800080800080800080800080800080800080800080800080
-        8000808000808000808000808000808000808000808000808000808000808000
-        8080008080008080008080008080008080008080008080008080008080008080
-        0080800080800080800080800080800080800080800080800080800080800080
-        8000802F2FFF0000E23434FF8000808000808000806B6BFF6666FF8000808000
-        808000808000808000808000808000808000809797977171719A9A9A80008080
-        0080800080B5B5B5B3B3B3800080800080800080800080800080800080800080
-        8000800000AA00006600008E5D5DFF8000803F3FFF00007E0000705353FE8000
-        80800080800080800080800080800080800080555555333333474747AEAEAE80
-        00809F9F9F3F3F3F383838A9A9A9800080800080800080800080800080800080
-        8000800B0BFE0000740000660000B81B1BFF0000740000660000660606FF8000
-        808000808000808000808000808000808000808585853A3A3A3333335C5C5C8D
-        8D8D3A3A3A333333333333838383800080800080800080800080800080800080
-        8000808000803F3FFF00009C00006C0000820000660000BE4F4FFE8000808000
-        808000808000808000808000808000808000808000809F9F9F4E4E4E36363641
-        41413333335F5F5FA7A7A7800080800080800080800080800080800080800080
-        8000808000808000800000E20000660000660000B28000808000808000808000
-        8080008080008080008080008080008080008080008080008071717133333333
-        3333595959800080800080800080800080800080800080800080800080800080
-        8000808000806666FF0000AA0000660000660000AE6262FF8000808000808000
-        80800080800080800080800080800080800080800080B3B3B355555533333333
-        3333575757B1B1B1800080800080800080800080800080800080800080800080
-        8000808000800000D000006600009E0000CE0000660000862424FF8000808000
-        808000808000808000808000808000808000808000806868683333334F4F4F67
-        6767333333434343929292800080800080800080800080800080800080800080
-        8000806868FF0000900000795B5BFF8000800000B600006C0000663B3BFF8000
-        80800080800080800080800080800080800080B3B3B34848483C3C3CADADAD80
-        00805B5B5B3636363333339D9D9D800080800080800080800080800080800080
-        8000808000800000CA0000B28000808000808000800808FF0606FF8000808000
-        8080008080008080008080008080008080008080008065656559595980008080
-        0080800080838383838383800080800080800080800080800080800080800080
-        8000808000808000806B6BFF8000808000808000808000808000808000808000
-        80800080800080800080800080800080800080800080800080B5B5B580008080
-        0080800080800080800080800080800080800080800080800080800080800080
-        8000808000808000808000808000808000808000808000808000808000808000
-        8080008080008080008080008080008080008080008080008080008080008080
-        0080800080800080800080800080800080800080800080800080800080800080
-        8000808000808000808000808000808000808000808000808000808000808000
-        8080008080008080008080008080008080008080008080008080008080008080
-        0080800080800080800080800080800080800080800080800080800080800080
-        8000808000808000808000808000808000808000808000808000808000808000
-        8080008080008080008080008080008080008080008080008080008080008080
-        0080800080800080800080800080800080800080800080800080}
-      NumGlyphs = 2
-      ParentShowHint = False
-      ShowHint = True
-      OnClick = btn_cancelClick
+    object lblCurrentDirText: TLabel
+      Left = 8
+      Top = 16
+      Width = 90
+      Height = 13
+      AutoSize = False
+      Caption = 'Current Directory:'
     end
-    object dlb: TDirectoryListBox
-      Left = 2
-      Top = 15
-      Width = 191
-      Height = 97
-      Align = alTop
-      Color = clWhite
-      ItemHeight = 16
+    object editNewDir: TEdit
+      Left = 104
+      Top = 38
+      Width = 136
+      Height = 21
+      Enabled = False
+      ReadOnly = True
       TabOrder = 0
-      OnChange = dlbChange
     end
-    object dcb: TDriveComboBox
-      Left = 2
-      Top = 112
-      Width = 159
-      Height = 19
-      Color = clWhite
-      DirList = dlb
+    object cbNewDir: TCheckBox
+      Left = 8
+      Top = 40
+      Width = 90
+      Height = 17
+      Hint = 'Check this and select a new filename to move the log file.'
+      Caption = 'New Directory:'
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 1
+      OnClick = cbNewDirClick
     end
+    object btnBrowse: TEButton
+      Left = 240
+      Top = 38
+      Width = 20
+      Height = 20
+      EFont.Charset = DEFAULT_CHARSET
+      EFont.Color = clWindowText
+      EFont.Height = -11
+      EFont.Name = 'MS Sans Serif'
+      EFont.Style = []
+      EFontOver.Charset = DEFAULT_CHARSET
+      EFontOver.Color = clWindowText
+      EFontOver.Height = -11
+      EFontOver.Name = 'MS Sans Serif'
+      EFontOver.Style = []
+      EFontDown.Charset = DEFAULT_CHARSET
+      EFontDown.Color = clWindowText
+      EFontDown.Height = -11
+      EFontDown.Name = 'MS Sans Serif'
+      EFontDown.Style = []
+      EColor = clWhite
+      EColorOver = 15790320
+      EColorDown = 13487565
+      EColor2 = clGray
+      EColorOver2 = 7434609
+      EColorDown2 = 5131854
+      EBrushStyle = bsSolid
+      EBrushStyleOver = bsSolid
+      EBrushStyleDown = bsSolid
+      EPenColor = clGray
+      EPenColorOver = clGray
+      EPenColorDown = clGray
+      ECaption = '...'
+      ECaptionOver = '...'
+      ECaptionDown = '...'
+      EnemyleftKind = ekButton
+      EGradient = egTopToBottom
+      EGradientOver = goTopToBottom
+      EGradientDown = gdTopToBottom
+      EOnFocusedShow = False
+      EOnFocusedColor = clBlack
+      EOnDefaultShow = False
+      EOnDefaultColor = clBlack
+      EnemyRoundedWidth = 1
+      EnemyRoundedHeight = 1
+      Default = False
+      Enabled = False
+      TabOrder = 2
+      TabStop = True
+      OnClick = btnBrowseClick
+    end
+  end
+  object gbNotifications: TGroupBox
+    Left = 0
+    Top = 73
+    Width = 267
+    Height = 197
+    Align = alClient
+    Caption = 'Notifications'
+    Color = clSilver
+    ParentColor = False
+    TabOrder = 1
+    object lblWt: TLabel
+      Left = 8
+      Top = 16
+      Width = 90
+      Height = 13
+      AutoSize = False
+      Caption = 'Working Time:'
+    end
+    object lblWtHours: TLabel
+      Left = 160
+      Top = 20
+      Width = 28
+      Height = 13
+      Caption = 'Hours'
+    end
+    object lblWtMinutes: TLabel
+      Left = 160
+      Top = 44
+      Width = 37
+      Height = 13
+      Caption = 'Minutes'
+    end
+    object lblWtSeconds: TLabel
+      Left = 160
+      Top = 68
+      Width = 42
+      Height = 13
+      Caption = 'Seconds'
+    end
+    object lblNotifyWtBtTitle: TLabel
+      Left = 8
+      Top = 100
+      Width = 90
+      Height = 13
+      AutoSize = False
+      Caption = 'NotificationTitle:'
+    end
+    object lblNotifyWtBtMessage: TLabel
+      Left = 8
+      Top = 124
+      Width = 90
+      Height = 13
+      AutoSize = False
+      Caption = 'Notification:'
+    end
+    object lblNotifyWtBtMessageCounter: TLabel
+      Left = 64
+      Top = 170
+      Width = 35
+      Height = 13
+      Alignment = taRightJustify
+      Caption = '0 / 250'
+    end
+    object cbNotifyWt: TCheckBox
+      Left = 8
+      Top = 38
+      Width = 90
+      Height = 17
+      Hint = 
+        'If this is checked, a BallonTip will appear when this amount of ' +
+        'time has passed.'
+      Caption = 'Notify Me!'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 0
+      OnClick = cbNotifyWtClick
+    end
+    object seWtHours: TSpinEdit
+      Left = 104
+      Top = 14
+      Width = 49
+      Height = 22
+      MaxValue = 23
+      MinValue = 0
+      TabOrder = 1
+      Value = 0
+    end
+    object seWtMinutes: TSpinEdit
+      Left = 104
+      Top = 38
+      Width = 49
+      Height = 22
+      MaxValue = 59
+      MinValue = 0
+      TabOrder = 2
+      Value = 0
+    end
+    object seWtSeconds: TSpinEdit
+      Left = 104
+      Top = 62
+      Width = 49
+      Height = 22
+      MaxValue = 59
+      MinValue = 0
+      TabOrder = 3
+      Value = 0
+    end
+    object editNotifyWtBtTitle: TEdit
+      Left = 104
+      Top = 96
+      Width = 156
+      Height = 21
+      MaxLength = 100
+      TabOrder = 4
+    end
+    object editNotifyWtBtMessage: TMemo
+      Left = 104
+      Top = 120
+      Width = 156
+      Height = 65
+      MaxLength = 250
+      TabOrder = 5
+      OnChange = editNotifyWtBtMessageChange
+    end
+  end
+  object pnlButtons: TPanel
+    Left = 0
+    Top = 270
+    Width = 267
+    Height = 27
+    Align = alBottom
+    Color = clGray
+    TabOrder = 2
+    object btnOk: TEButton
+      Left = 192
+      Top = 4
+      Width = 25
+      Height = 20
+      EFont.Charset = DEFAULT_CHARSET
+      EFont.Color = clWindowText
+      EFont.Height = -11
+      EFont.Name = 'MS Sans Serif'
+      EFont.Style = []
+      EFontOver.Charset = DEFAULT_CHARSET
+      EFontOver.Color = clWindowText
+      EFontOver.Height = -11
+      EFontOver.Name = 'MS Sans Serif'
+      EFontOver.Style = []
+      EFontDown.Charset = DEFAULT_CHARSET
+      EFontDown.Color = clWindowText
+      EFontDown.Height = -11
+      EFontDown.Name = 'MS Sans Serif'
+      EFontDown.Style = []
+      EColor = clWhite
+      EColorOver = 15790320
+      EColorDown = 13487565
+      EColor2 = clGray
+      EColorOver2 = 7434609
+      EColorDown2 = 5131854
+      EBrushStyle = bsSolid
+      EBrushStyleOver = bsSolid
+      EBrushStyleDown = bsSolid
+      EPenColor = clGray
+      EPenColorOver = clGray
+      EPenColorDown = clGray
+      ECaption = 'OK'
+      ECaptionOver = 'OK'
+      ECaptionDown = 'OK'
+      EnemyleftKind = ekButton
+      EGradient = egTopToBottom
+      EGradientOver = goTopToBottom
+      EGradientDown = gdTopToBottom
+      EOnFocusedShow = False
+      EOnFocusedColor = clBlack
+      EOnDefaultShow = False
+      EOnDefaultColor = clBlack
+      EnemyRoundedWidth = 1
+      EnemyRoundedHeight = 1
+      Default = False
+      TabOrder = 0
+      TabStop = True
+      OnClick = btnOkClick
+    end
+    object btnCancel: TEButton
+      Left = 216
+      Top = 4
+      Width = 45
+      Height = 20
+      EFont.Charset = DEFAULT_CHARSET
+      EFont.Color = clWindowText
+      EFont.Height = -11
+      EFont.Name = 'MS Sans Serif'
+      EFont.Style = []
+      EFontOver.Charset = DEFAULT_CHARSET
+      EFontOver.Color = clWindowText
+      EFontOver.Height = -11
+      EFontOver.Name = 'MS Sans Serif'
+      EFontOver.Style = []
+      EFontDown.Charset = DEFAULT_CHARSET
+      EFontDown.Color = clWindowText
+      EFontDown.Height = -11
+      EFontDown.Name = 'MS Sans Serif'
+      EFontDown.Style = []
+      EColor = clWhite
+      EColorOver = 15790320
+      EColorDown = 13487565
+      EColor2 = clGray
+      EColorOver2 = 7434609
+      EColorDown2 = 5131854
+      EBrushStyle = bsSolid
+      EBrushStyleOver = bsSolid
+      EBrushStyleDown = bsSolid
+      EPenColor = clGray
+      EPenColorOver = clGray
+      EPenColorDown = clGray
+      ECaption = 'Cancel'
+      ECaptionOver = 'Cancel'
+      ECaptionDown = 'Cancel'
+      EnemyleftKind = ekButton
+      EGradient = egTopToBottom
+      EGradientOver = goTopToBottom
+      EGradientDown = gdTopToBottom
+      EOnFocusedShow = False
+      EOnFocusedColor = clBlack
+      EOnDefaultShow = False
+      EOnDefaultColor = clBlack
+      EnemyRoundedWidth = 1
+      EnemyRoundedHeight = 1
+      Default = False
+      TabOrder = 1
+      TabStop = True
+      OnClick = btnCancelClick
+    end
+  end
+  object saveDialog: TSaveDialog
+    DefaultExt = '.txt'
+    Filter = 'Text Files|*.txt'
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofPathMustExist, ofEnableSizing]
+    Left = 65520
+    Top = 65520
   end
 end

@@ -4,22 +4,19 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, ColorGrd;
+  Dialogs, StdCtrls, FileCtrl, Buttons;
 
 type
   TFrm_options = class(TForm)
-    btnlogdirectory: TButton;
-    btnok: TButton;
-    btncancel: TButton;
-    cgtext: TColorGrid;
-    gbtc: TGroupBox;
-    gblogdir: TGroupBox;
-    editlog: TEdit;
-    pnlbuttons: TPanel;
-    btndefault: TButton;
-    rgposition: TRadioGroup;
-    procedure btnlogdirectoryClick(Sender: TObject);
-    procedure btndefaultClick(Sender: TObject);
+    gb_options: TGroupBox;
+    lbl_directory: TLabel;
+    dlb: TDirectoryListBox;
+    dcb: TDriveComboBox;
+    btn_ok: TSpeedButton;
+    btn_cancel: TSpeedButton;
+    procedure btn_okClick(Sender: TObject);
+    procedure dlbChange(Sender: TObject);
+    procedure btn_cancelClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -31,22 +28,21 @@ var
 
 implementation
 
-uses GlobalDefinitions, logfile;
-
 {$R *.dfm}
 
-procedure TFrm_options.btnlogdirectoryClick(Sender: TObject);
+procedure TFrm_options.btn_okClick(Sender: TObject);
 begin
-  Frm_logdir.BringToFront;
-  if Frm_logdir.ShowModal = mrOk then
-  editlog.Text := dir;
+  Frm_options.ModalResult := mrOK;
 end;
 
-procedure TFrm_options.btndefaultClick(Sender: TObject);
+procedure TFrm_options.dlbChange(Sender: TObject);
 begin
-  editlog.Text := defaultdir;
-  rgposition.ItemIndex := 3;;
-  cgtext.ForegroundIndex := 10;
+  lbl_directory.Caption := dlb.Directory;
+end;
+
+procedure TFrm_options.btn_cancelClick(Sender: TObject);
+begin
+  Frm_options.ModalResult := mrCancel;
 end;
 
 end.

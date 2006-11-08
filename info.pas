@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Buttons, StdCtrls, jpeg, ShellApi, ExtCtrls;
+  Dialogs, Buttons, StdCtrls, jpeg, ShellApi, ExtCtrls, JvExControls,
+  JvComponent, JvSpeedButton;
 
 type
   TFrm_Info = class(TForm)
@@ -15,9 +16,8 @@ type
     lblEmail: TLabel;
     lblHomepage: TLabel;
     lblCopyright: TLabel;
-    btnClose: TSpeedButton;
     lblVersion: TLabel;
-    procedure btnCloseClick(Sender: TObject);
+    btnClose: TJvSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure lblHomepageClick(Sender: TObject);
     procedure lblEmailClick(Sender: TObject);
@@ -34,11 +34,6 @@ implementation
 uses globalDefinitions;
 
 {$R *.dfm}
-
-procedure TFrm_Info.btnCloseClick(Sender: TObject);
-begin
-  Close;
-end;
 
 procedure TFrm_Info.FormCreate(Sender: TObject);
 begin

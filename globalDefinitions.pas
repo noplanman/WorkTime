@@ -1,7 +1,7 @@
 unit globalDefinitions;
 
 interface
-uses SysUtils, Windows;
+uses SysUtils, Windows, HotKeyManager;
 
 const
 // Info Params
@@ -20,6 +20,12 @@ var
   defNotifyWtBtTitle:String;
   defNotifyWtBtMessage:String;
   defRootKey:HKEY=HKEY_CURRENT_USER;
+  defHotKeyNoon:Cardinal;
+  dbDataDir:String;
+  dbWorkTime:String;
+  dbActivity:String;
+  dbActivityList:String;
+  dbProjects:String;
 
 implementation
 
@@ -37,6 +43,21 @@ begin
     'Worktime Over!';
   defNotifyWtBtMessage :=
     'The Working Time you have set is over!';
+
+  defHotKeyNoon :=
+    GetHotKey(MOD_CONTROL+MOD_ALT,VK_SPACE);
+
+
+  dbDataDir :=
+    IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0)))+'data\';
+  dbWorkTime :=
+    dbDataDir+'WorkTime.cds';
+  dbActivity :=
+    dbDataDir+'Activity.cds';
+  dbActivityList :=
+    dbDataDir+'ActivityList.cds';
+  dbProjects :=
+    dbDataDir+'Projects.cds';
 end;
 
 initialization

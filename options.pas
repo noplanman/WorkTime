@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Forms, Dialogs, StdCtrls, EButton, Spin,
-  ExtCtrls, Classes, Controls;
+  ExtCtrls, Classes, Controls, ComCtrls, JvSpeedButton, JvExControls,
+  JvComponent, JvGradient, jpeg, Buttons;
 
 type
   TFrm_Options = class(TForm)
@@ -14,11 +15,7 @@ type
     editNewDir: TEdit;
     lblCurrentDirText: TLabel;
     cbNewDir: TCheckBox;
-    btnBrowse: TEButton;
-    btnCancel: TEButton;
-    btnOk: TEButton;
     gbNotifications: TGroupBox;
-    pnlButtons: TPanel;
     lblWt: TLabel;
     cbNotifyWt: TCheckBox;
     seWtHours: TSpinEdit;
@@ -30,15 +27,24 @@ type
     editNotifyWtBtTitle: TEdit;
     lblNotifyWtBtTitle: TLabel;
     lblNotifyWtBtMessage: TLabel;
-    editNotifyWtBtMessage: TMemo;
+    memoNotifyWtBtMessage: TMemo;
     lblNotifyWtBtMessageCounter: TLabel;
-    procedure btnOkClick(Sender: TObject);
-    procedure btnCancelClick(Sender: TObject);
+    gradButtons: TJvGradient;
+    pnlButtons: TPanel;
+    btnOk: TJvSpeedButton;
+    btnCancel: TJvSpeedButton;
+    lblHotKeyNoon: TLabel;
+    hcNoon: THotKey;
+    imgTitleBar: TImage;
+    btnClose: TJvSpeedButton;
+    btnBrowse: TSpeedButton;
     procedure cbNewDirClick(Sender: TObject);
     procedure btnBrowseClick(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure cbNotifyWtClick(Sender: TObject);
-    procedure editNotifyWtBtMessageChange(Sender: TObject);
+    procedure memoNotifyWtBtMessageChange(Sender: TObject);
+    procedure imgTitleBarMouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
   private
     { Private declarations }
   public
@@ -49,19 +55,9 @@ var
   Frm_Options: TFrm_Options;
 
 implementation
-uses globalDefinitions, reg;
+uses globalDefinitions, reg, Math;
 
 {$R *.dfm}
-
-procedure TFrm_Options.btnOkClick(Sender: TObject);
-begin
-  Frm_options.ModalResult := mrOK;
-end;
-
-procedure TFrm_Options.btnCancelClick(Sender: TObject);
-begin
-  Frm_options.ModalResult := mrCancel;
-end;
 
 procedure TFrm_Options.cbNewDirClick(Sender: TObject);
 begin
@@ -89,11 +85,23 @@ begin
   seWtHours.Enabled := cbNotifyWt.Checked;
   seWtMinutes.Enabled := cbNotifyWt.Checked;
   seWtSeconds.Enabled := cbNotifyWt.Checked;
+  editNotifyWtBtTitle.Enabled := cbNotifyWt.Checked;
+  memoNotifyWtBtMessage.Enabled := cbNotifyWt.Checked;
 end;
 
-procedure TFrm_Options.editNotifyWtBtMessageChange(Sender: TObject);
+procedure TFrm_Options.memoNotifyWtBtMessageChange(Sender: TObject);
 begin
-  lblNotifyWtBtMessageCounter.Caption := IntToStr(Length(editNotifyWtBtMessage.Text))+' / 250';
+  lblNotifyWtBtMessageCounter.Caption := IntToStr(Length(memoNotifyWtBtMessage.Text))+' / 250';
+end;
+
+procedure TFrm_Options.imgTitleBarMouseMove(Sender: TObject;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  if (ssLeft in Shift) then
+  begin
+    ReleaseCapture;
+    SendMessage(Frm_Options.Handle, WM_SYSCOMMAND, SC_MOVE+1,0);
+  end;
 end;
 
 end.

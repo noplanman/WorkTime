@@ -1,6 +1,6 @@
 object Work_Time: TWork_Time
-  Left = 432
-  Top = 211
+  Left = 568
+  Top = 282
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'Work_Time'
@@ -8,13 +8,17 @@ object Work_Time: TWork_Time
   ClientWidth = 100
   Color = clSilver
   TransparentColorValue = clFuchsia
+  Constraints.MaxHeight = 127
+  Constraints.MaxWidth = 108
+  Constraints.MinHeight = 127
+  Constraints.MinWidth = 100
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
+  FormStyle = fsStayOnTop
   OldCreateOrder = False
-  Position = poScreenCenter
   Scaled = False
   ScreenSnap = True
   SnapBuffer = 15
@@ -23,12 +27,16 @@ object Work_Time: TWork_Time
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object bg: TImage
+  object imgBg: TImage
     Left = 0
     Top = 0
     Width = 100
     Height = 100
     Align = alClient
+    Constraints.MaxHeight = 100
+    Constraints.MaxWidth = 100
+    Constraints.MinHeight = 100
+    Constraints.MinWidth = 100
     Picture.Data = {
       0A544A504547496D61676555290000FFD8FFE000104A46494600010200006400
       640000FFEC00114475636B7900010004000000640000FFEE000E41646F626500
@@ -362,7 +370,7 @@ object Work_Time: TWork_Time
       8FCCD5D5A6A5BFFE90F703FF0076F5A69FF6FEDFE9FE97FE4FD93A1FF81D0FF6
       38F3EFFF005FE2FEC7317AB93A3EBD5FE2D5FC5563FF00AEE5F1D3FD4BFB3CC9
       D55FFFD9}
-    OnMouseMove = bgMouseMove
+    OnMouseMove = imgBgMouseMove
   end
   object lblTime: TLabel
     Left = 81
@@ -495,7 +503,50 @@ object Work_Time: TWork_Time
     ShowHint = True
     OnClick = btnInfoClick
   end
-  object pm: TPopupMenu
+  object btnChangeActivity: TSpeedButton
+    Left = 28
+    Top = 74
+    Width = 20
+    Height = 20
+    Flat = True
+    Glyph.Data = {
+      36040000424D3604000000000000360000002800000010000000100000000100
+      20000000000000040000120B0000120B00000000000000000000FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00B18D8A009A746600A07362008D6864008E718000A17566009B6B56009B6C
+      59009B6C5A009C6853009C6E4B00FF00FF00FF00FF00FF00FF00FF00FF00D19C
+      BC00FCF8F600FFFAF100FFECDB007570CA00202FC100A797C500FFD9B300FEC7
+      A800FEC9AA00FEC3A100FFB887009F695300FF00FF00FF00FF00FF00FF00D19B
+      BB00FEFDFB00FEFAFD00727BDF001C2ED5002D40E7003F4ED200D9C2CA00FFDB
+      C600F8D7C800F7D1C000FFC3A1009C685300FF00FF00FF00FF00FF00FF00D59E
+      BD00EBE9EE006C73D900192BD1006C78EF00818DF9003347E500575FD000F5D8
+      CC00FBD9C600F7D7C800FDC8A9009A6C5900FF00FF00FF00FF00FF00FF00DFAD
+      C700A2BAE8002838E1005C6BF100C6CAFD00EDE3EF007F8AF700253AE8008A88
+      D400FFE0C600F8D7C700FFCDB3009B6E5C00FF00FF00FF00FF00FF00FF00E0A7
+      C700F8F5F800AEB5FC00B7BDF800FCFCFF00FFFFF900ECE5EF00818CF7002F3F
+      D300BDA7BB00FFE1CC00FFD9C6009D726400FF00FF00FF00FF00FF00FF00DDA5
+      C700FDFCFB00FFFFFF00FFFFFE00FFFFFF00FFFEFE00FFFEF600EEE8F2007A88
+      F8003C4DE200CCC4E700FFE9D1009B716400FF00FF00FF00FF00FF00FF00DDA5
+      C700FDFCFB00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFA00FAF1
+      F6007D88F8004E5DE300EFDBDC00B48D8100FF00FF00FF00FF00FF00FF00DDA5
+      C700FDFCFB00FFFFFF00EDF3F500C1CFD500C7BAB700BBABA600BAA7A000CDB1
+      A000D8C3C700757FED00797BD700B8969400FF00FF00FF00FF00FF00FF00DDA5
+      C700FDFCFB00FFFFFF00C4D6DC0074ACBB006DABBB005DA3B6005EA1B100588D
+      9A00A0978F00FFEDE1007B87EE00635DC400FF00FF00FF00FF00FF00FF00DDA5
+      C700FDFCFB00FFFFFF00E1EEEF00B2CAD50098CCD7006096A20075C8D800639C
+      AB009A989900FFFDF100F8F7FC00818BC000FF00FF00FF00FF00FF00FF00FF00
+      FF00F0CBCA00DDCCCB00EACDC900A1A7B900ADC5D30095C4CE008ACEDB00768C
+      9C00C8A8A500D7BFC100DACABB00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FB1FF100FF00FF00FF00FF00FF00FF009983C6009B97CE008895C300FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00}
+    OnClick = btnChangeActivityClick
+  end
+  object pmTNA: TPopupMenu
     Left = 65520
     Top = 65520
     object pmShowHide: TMenuItem
@@ -512,9 +563,9 @@ object Work_Time: TWork_Time
       OnClick = pmExitClick
     end
   end
-  object counter: TTimer
+  object tmrCounter: TTimer
     Interval = 100
-    OnTimer = counterTimer
+    OnTimer = tmrCounterTimer
     Left = 65520
     Top = 65520
   end
@@ -534,7 +585,7 @@ object Work_Time: TWork_Time
       000000000000000000000000000000000000000000000000000000000000}
     IconVisible = True
     IconIndex = 0
-    PopupMenu = pm
+    PopupMenu = pmTNA
     MinimizeToTray = True
     OnClick = trayIconClick
     OnBalloonHintTimeout = trayIconBalloonHintTimeout
@@ -692,6 +743,108 @@ object Work_Time: TWork_Time
   end
   object appEvents: TApplicationEvents
     OnException = appEventsException
+    Left = 65520
+    Top = 65520
+  end
+  object cdsWorkTime: TClientDataSet
+    Active = True
+    Aggregates = <>
+    Params = <>
+    Left = 65520
+    Top = 65520
+    Data = {
+      810000009619E0BD010000001800000006000000000003000000810002696404
+      000100000000000F61637469766974796C6973745F6964040001000000000009
+      776F726B7374617274080008000000000007776F726B656E6408000800000000
+      00096E6F6F6E73746172740800080000000000076E6F6F6E656E640800080000
+      0000000000}
+    object cdsWorkTimeid: TAutoIncField
+      FieldName = 'id'
+    end
+    object cdsWorkTimeactivitylist_id: TIntegerField
+      FieldName = 'activitylist_id'
+    end
+    object cdsWorkTimeworkstart: TDateTimeField
+      FieldName = 'workstart'
+    end
+    object cdsWorkTimeworkend: TDateTimeField
+      FieldName = 'workend'
+    end
+    object cdsWorkTimenoonstart: TDateTimeField
+      FieldName = 'noonstart'
+    end
+    object cdsWorkTimenoonend: TDateTimeField
+      FieldName = 'noonend'
+    end
+  end
+  object cdsActivityList: TClientDataSet
+    Active = True
+    Aggregates = <>
+    Params = <>
+    Left = 65520
+    Top = 65520
+    Data = {
+      4D0000009619E0BD0100000018000000030000000000030000004D0002696404
+      000100000000000B776F726B74696D655F696404000100000000000B61637469
+      766974795F696404000100000000000000}
+    object cdsActivityListid: TAutoIncField
+      FieldName = 'id'
+    end
+    object cdsActivityListworktime_id: TIntegerField
+      FieldName = 'worktime_id'
+    end
+    object cdsActivityListactivity_id: TIntegerField
+      FieldName = 'activity_id'
+    end
+  end
+  object cdsActivity: TClientDataSet
+    Active = True
+    Aggregates = <>
+    Params = <>
+    Left = 65520
+    Top = 65520
+    Data = {
+      5C0000009619E0BD0100000018000000030000000000030000005C0002696404
+      000100000000000A70726F6A6563745F69640400010000000000086163746976
+      69747904004B0000000100075355425459504502004900050054657874000000}
+    object cdsActivityid: TAutoIncField
+      FieldName = 'id'
+    end
+    object cdsActivityproject_id: TIntegerField
+      FieldName = 'project_id'
+    end
+    object cdsActivityactivity: TMemoField
+      FieldName = 'activity'
+      BlobType = ftMemo
+    end
+  end
+  object dsProjects: TDataSource
+    DataSet = cdsProjects
+    Left = 65520
+    Top = 65520
+  end
+  object cdsProjects: TClientDataSet
+    Active = True
+    Aggregates = <>
+    Params = <>
+    Left = 65520
+    Top = 65520
+    Data = {
+      6C0000009619E0BD0100000018000000020000000000030000006C0002696404
+      0001000200010007535542545950450200490008004175746F696E6300077072
+      6F6A656374010049000000010005574944544802000200140001000C4155544F
+      494E4356414C55450400010001000000}
+    object cdsProjectsid: TAutoIncField
+      FieldName = 'id'
+    end
+    object cdsProjectsproject: TStringField
+      FieldName = 'project'
+    end
+  end
+  object tmrFade: TTimer
+    Enabled = False
+    Interval = 10
+    OnTimer = tmrFadeTimer
     Left = 65520
     Top = 65520
   end

@@ -6,13 +6,14 @@ uses
   options in 'options.pas' {Frm_Options},
   reg in 'reg.pas',
   info in 'info.pas' {Frm_Info},
-  globalDefinitions in 'globalDefinitions.pas';
+  globalDefinitions in 'globalDefinitions.pas',
+  activity in 'activity.pas' {Frm_Activity},
+  projects in 'projects.pas' {Frm_Projects};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.CreateForm(TWork_Time, Work_Time);
-  Application.CreateForm(TFrm_Options, Frm_Options);
   Application.Run;
 end.

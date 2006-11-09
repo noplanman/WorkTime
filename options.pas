@@ -9,7 +9,7 @@ uses
 
 type
   TFrm_Options = class(TForm)
-    gbOptions: TGroupBox;
+    gbLogFile: TGroupBox;
     lblCurrentDir: TLabel;
     saveDialog: TSaveDialog;
     editNewDir: TEdit;
@@ -38,6 +38,14 @@ type
     imgTitleBar: TImage;
     btnClose: TJvSpeedButton;
     btnBrowse: TSpeedButton;
+    gbVarious: TGroupBox;
+    cbFade: TCheckBox;
+    tbFadeSpeed: TTrackBar;
+    lblFadeSpeed: TLabel;
+    lblFadeSlow: TLabel;
+    lblFadeFast: TLabel;
+    cbStartMinimized: TCheckBox;
+    cbAutoRun: TCheckBox;
     procedure cbNewDirClick(Sender: TObject);
     procedure btnBrowseClick(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -45,6 +53,7 @@ type
     procedure memoNotifyWtBtMessageChange(Sender: TObject);
     procedure imgTitleBarMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
+    procedure cbFadeClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -102,6 +111,11 @@ begin
     ReleaseCapture;
     SendMessage(Frm_Options.Handle, WM_SYSCOMMAND, SC_MOVE+1,0);
   end;
+end;
+
+procedure TFrm_Options.cbFadeClick(Sender: TObject);
+begin
+  tbFadeSpeed.Enabled := cbFade.Checked;
 end;
 
 end.

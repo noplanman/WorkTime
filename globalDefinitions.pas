@@ -14,6 +14,7 @@ progAuthorHomepage = 'www.armyman.ch';
 
 var
   defRegKey:String;
+  runRegKey:String; // RegKey of AutoRun
   defLogFile:String;
   defWt:Integer; //seconds
   defNotifyWt:Boolean;
@@ -21,6 +22,11 @@ var
   defNotifyWtBtMessage:String;
   defRootKey:HKEY=HKEY_CURRENT_USER;
   defHotKeyNoon:Cardinal;
+  defFade:Boolean;
+  defFadeSpeed:Integer;
+  defStartMinimized:Boolean;
+  defAutoRun:Boolean;
+
   dbDataDir:String;
   dbWorkTime:String;
   dbActivity:String;
@@ -33,6 +39,8 @@ procedure setDefaultValues;
 begin
   defRegKey :=
     'Software\ArmyMan\WorkTime';
+  runRegKey :=
+    'Software\Microsoft\Windows\CurrentVersion\Run';
   defLogFile :=
     IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + 'WorkTimeLog.txt';
   defWt :=
@@ -47,6 +55,15 @@ begin
   defHotKeyNoon :=
     GetHotKey(MOD_CONTROL+MOD_ALT,VK_SPACE);
 
+  defFade :=
+    True;
+  defFadeSpeed :=
+    5;
+
+  defStartMinimized :=
+    False;
+  defAutoRun :=
+    True;
 
   dbDataDir :=
     IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0)))+'data\';

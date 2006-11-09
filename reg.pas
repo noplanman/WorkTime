@@ -3,6 +3,9 @@ unit reg;
 interface
 
 function keyExists(key:String):Boolean;
+function delValue(key,name:String):Boolean;
+function delKey(key:String):Boolean;
+
 function getString(key,name,default:String):String;
 function getInteger(key,name:String;default:Integer):Integer;
 function getBoolean(key,name:String;default:Boolean):Boolean;
@@ -25,6 +28,32 @@ begin
     regist := TRegistry.Create;
     regist.RootKey := defRootKey;
     result := regist.KeyExists(key);
+  finally
+    regist.Free;
+  end;
+end;
+
+function delValue(key,name:String):Boolean;
+begin
+  try
+    regist := TRegistry.Create;
+    regist.RootKey := defRootKey;
+    if regist.OpenKey(key, false) then
+      if (regist.ValueExists(name)) then
+        result := regist.DeleteValue(name);
+  finally
+    regist.CloseKey;
+    regist.Free;
+  end;
+end;
+
+function delKey(key:String):Boolean;
+begin
+  try
+    regist := TRegistry.Create;
+    regist.RootKey := defRootKey;
+    if (regist.KeyExists(key)) then
+      result := regist.DeleteKey(key);
   finally
     regist.Free;
   end;

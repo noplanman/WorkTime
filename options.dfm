@@ -4,7 +4,7 @@ object Frm_Options: TFrm_Options
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'Options'
-  ClientHeight = 322
+  ClientHeight = 427
   ClientWidth = 267
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -65,7 +65,7 @@ object Frm_Options: TFrm_Options
     ModalResult = 2
     Transparent = True
   end
-  object gbOptions: TGroupBox
+  object gbLogFile: TGroupBox
     Left = 0
     Top = 20
     Width = 267
@@ -196,7 +196,7 @@ object Frm_Options: TFrm_Options
     Left = 0
     Top = 93
     Width = 267
-    Height = 205
+    Height = 203
     Align = alClient
     Caption = 'Notifications'
     Color = clSilver
@@ -337,7 +337,7 @@ object Frm_Options: TFrm_Options
   end
   object pnlButtons: TPanel
     Left = 0
-    Top = 298
+    Top = 403
     Width = 267
     Height = 24
     Align = alBottom
@@ -451,6 +451,75 @@ object Frm_Options: TFrm_Options
       HotTrackFont.Style = []
       ModalResult = 2
       Transparent = True
+    end
+  end
+  object gbVarious: TGroupBox
+    Left = 0
+    Top = 296
+    Width = 267
+    Height = 107
+    Align = alBottom
+    Caption = 'Various'
+    Color = clSilver
+    ParentColor = False
+    TabOrder = 3
+    object lblFadeSpeed: TLabel
+      Left = 8
+      Top = 40
+      Width = 61
+      Height = 13
+      Caption = 'Fade Speed:'
+    end
+    object lblFadeSlow: TLabel
+      Left = 104
+      Top = 40
+      Width = 21
+      Height = 13
+      Caption = 'slow'
+    end
+    object lblFadeFast: TLabel
+      Left = 238
+      Top = 40
+      Width = 17
+      Height = 13
+      Alignment = taRightJustify
+      Caption = 'fast'
+    end
+    object cbFade: TCheckBox
+      Left = 8
+      Top = 16
+      Width = 249
+      Height = 17
+      Caption = 'Fade In/Out on Show/Hide'
+      TabOrder = 0
+      OnClick = cbFadeClick
+    end
+    object tbFadeSpeed: TTrackBar
+      Left = 130
+      Top = 32
+      Width = 105
+      Height = 30
+      Min = 1
+      Position = 1
+      TabOrder = 1
+      ThumbLength = 10
+      TickMarks = tmBoth
+    end
+    object cbStartMinimized: TCheckBox
+      Left = 8
+      Top = 64
+      Width = 249
+      Height = 17
+      Caption = 'Start Minimized'
+      TabOrder = 2
+    end
+    object cbAutoRun: TCheckBox
+      Left = 8
+      Top = 84
+      Width = 249
+      Height = 17
+      Caption = 'Launch Automatically With Windows'
+      TabOrder = 3
     end
   end
   object saveDialog: TSaveDialog

@@ -79,10 +79,14 @@ type
     procedure btnChangeActivityClick(Sender: TObject);
     procedure tmrFadeTimer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure trayIconStartup(Sender: TObject; var ShowMainForm: Boolean);
+    procedure FormShow(Sender: TObject);
+    procedure FormHide(Sender: TObject);
   protected
   private
     { Private declarations }
     procedure Init;
+    procedure FadeForm(Action:String);
   public
     { Public declarations }
     procedure WmMoving(var Message: TWmMoving); message WM_MOVING;
@@ -103,14 +107,22 @@ var
   mHandle:THandle;
   StartedTick,NoonTick:Cardinal; //startedTick:program start,noonTick:noon start
   s,m,h,wh:Double; //seconds, minutes, hours, workinghours
-  HotKeyNoon:Cardinal;
-  WtOver:Boolean; // check if the set worktime is allready over
+
   // setting variables
   LogFile:String;
   Wt:Integer;
+  WtOver:Boolean; // check if the set worktime is allready over
   NotifyWt:Boolean;
   NotifyWtBtTitle:String;
   NotifyWtBtMessage:String;
+  HotKeyNoon:Cardinal;
+  Fade:Boolean;
+  FadeSpeed:Integer;
+  StartMinimized:Boolean;
+  AutoRun:Boolean;
+
+  // various variables
+  FadeAction:String; // show, hide or close with fade effect
 
 {$R *.dfm}
 
@@ -160,10 +172,27 @@ end;
 
 procedure TWork_Time.FormActivate(Sender: TObject);
 begin
-  ShowWindow(Application.Handle, SW_HIDE);
+  SetWindowLong(Application.Handle,GWL_EXSTYLE,WS_EX_TOOLWINDOW);
   Work_Time.getOptions;
   hkm.AddHotKey(HotKeyNoon);
   StartLog;
+  if not StartMinimized then
+    if Fade then FadeForm('show') else Show
+  else AlphaBlendValue := 0;
+end;
+
+procedure TWork_Time.FadeForm(Action:String);
+begin
+  FadeAction := LowerCase(Action);
+  if FadeAction = 'auto' then
+    if Visible then FadeAction := 'hide' else FadeAction := 'show';
+
+  if FadeAction = 'show' then
+    AlphaBlendValue := 0
+  else
+  if FadeAction = 'hide' then
+    AlphaBlendValue := 255;
+  tmrFade.Enabled := True;
 end;
 
 procedure TWork_Time.getOptions;
@@ -180,6 +209,13 @@ begin
   if NotifyWtBtMessage = defNotifyWtBtMessage then reg.setString(defRegKey,'NotifyWtBtMessage',defNotifyWtBtMessage);
   HotKeyNoon := reg.getInteger(defRegKey,'HotKeyNoon',defHotKeyNoon);
   if HotKeyNoon = defHotKeyNoon then reg.setInteger(defRegKey,'HotKeyNoon',defHotKeyNoon);
+  Fade := reg.getBoolean(defRegKey,'Fade',defFade);
+  if Fade = defFade then reg.setBoolean(defRegKey,'Fade',defFade);
+  FadeSpeed := reg.getInteger(defRegKey,'FadeSpeed',defFadeSpeed);
+  if FadeSpeed = defFadeSpeed then reg.setInteger(defRegKey,'FadeSpeed',defFadeSpeed);
+  StartMinimized := reg.getBoolean(defRegKey,'StartMinimized',defStartMinimized);
+  if StartMinimized = defStartMinimized then reg.setBoolean(defRegKey,'StartMinimized',defStartMinimized);
+  AutoRun := reg.getString(runRegKey,'WorkTime','') <> '';
 end;
 
 procedure TWork_Time.Noon;
@@ -264,6 +300,12 @@ begin
       editNotifyWtBtTitle.Text := NotifyWtBtTitle;
       memoNotifyWtBtMessage.Text := NotifyWtBtMessage;
       hcNoon.HotKey := HotKeyNoon;
+      cbFade.Checked := Fade;
+      tbFadeSpeed.Enabled := Fade;
+      tbFadeSpeed.Position := FadeSpeed;
+      cbStartMinimized.Checked := StartMinimized;
+      cbAutoRun.Checked := AutoRun;
+
       if Frm_Options.ShowModal = mrOK then
       begin
         if cbNewDir.Checked then
@@ -280,6 +322,7 @@ begin
             end;
           end;
         end;
+
         NotifyWt := cbNotifyWt.Checked;
         reg.setBoolean(defRegKey,'NotifyWt',NotifyWt);
         if NotifyWt then
@@ -298,6 +341,14 @@ begin
 
         HotKeyNoon := hcNoon.HotKey;
         reg.setInteger(defRegKey,'HotKeyNoon',HotKeyNoon);
+        Fade := cbFade.Checked;
+        reg.setBoolean(defRegKey,'Fade',Fade);
+        FadeSpeed := tbFadeSpeed.Position;
+        reg.setInteger(defRegKey,'FadeSpeed',FadeSpeed);
+        StartMinimized := cbStartMinimized.Checked;
+        reg.setBoolean(defRegKey,'StartMinimized',StartMinimized);
+        AutoRun := cbAutoRun.Checked;
+        if AutoRun then reg.setString(runRegKey,progName,ParamStr(0)) else reg.delValue(runRegKey,progName);
       end;
       hkm.AddHotKey(HotKeyNoon);
     end;
@@ -352,22 +403,24 @@ end;
 
 procedure TWork_Time.pmShowHideClick(Sender: TObject);
 begin
-  tmrFade.Enabled := True;
+  if Fade then FadeForm('auto') else
+  if Visible then Hide else Show;
 end;
 
 procedure TWork_Time.btnMinimizeClick(Sender: TObject);
 begin
-  tmrFade.Enabled := True;
+  if Fade then FadeForm('auto') else
+  if Visible then Hide else Show;
 end;
 
 procedure TWork_Time.pmExitClick(Sender: TObject);
 begin
-  Close;
+  if Fade then FadeForm('close') else Close;
 end;
 
 procedure TWork_Time.btnCloseClick(Sender: TObject);
 begin
-  Close;
+  if Fade then FadeForm('close') else Close;
 end;
 
 procedure TWork_Time.imgBgMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -413,11 +466,6 @@ begin
   WriteLn(Log, '------------------------------');
   CloseFile(Log);
   hkm.ClearHotKeys;
-  if Visible then
-  begin
-    tmrFade.Enabled := True;
-    while Visible do delay(1);
-  end;
 end;
 
 procedure TWork_Time.hkmHotKeyPressed(HotKey: Cardinal; Index: Word);
@@ -427,7 +475,9 @@ end;
 
 procedure TWork_Time.trayIconClick(Sender: TObject);
 begin
-  tmrFade.Enabled := True;
+  if Fade then
+    FadeForm('auto')
+  else if Visible then Hide else Show;
 end;
 
 procedure TWork_Time.appEventsException(Sender: TObject; E: Exception);
@@ -458,30 +508,56 @@ end;
 procedure TWork_Time.tmrFadeTimer(Sender: TObject);
 begin
   AlphaBlend := True;
-  if Visible and (pmShowHide.Caption = 'Hide') then
+  if FadeAction = 'show' then
   begin
-    if AlphaBlendValue >= 10 then
-      AlphaBlendValue := AlphaBlendValue - 10
+    if not Visible then Show;
+    if AlphaBlendValue <= 255 - FadeSpeed then
+      AlphaBlendValue := AlphaBlendValue + FadeSpeed
+    else
+    begin
+      AlphaBlend := False;
+      tmrFade.Enabled := False;
+    end;
+  end
+  else
+  if FadeAction = 'hide' then
+  begin
+    if AlphaBlendValue >= FadeSpeed then
+      AlphaBlendValue := AlphaBlendValue - FadeSpeed
     else
     begin
       Hide;
       AlphaBlend := False;
       tmrFade.Enabled := False;
-      pmShowHide.Caption := 'Show';
     end;
   end
   else
+  if FadeAction = 'close' then
   begin
-    Show;
-    if AlphaBlendValue <= 245 then
-      AlphaBlendValue := AlphaBlendValue + 10
+    if AlphaBlendValue >= FadeSpeed then
+      AlphaBlendValue := AlphaBlendValue - FadeSpeed
     else
     begin
-      AlphaBlend := False;
-      tmrFade.Enabled := False;
-      pmShowHide.Caption := 'Hide';
+      Close;
     end;
   end;
+end;
+
+procedure TWork_Time.trayIconStartup(Sender: TObject;
+  var ShowMainForm: Boolean);
+begin
+  ShowMainForm := False;
+  Work_Time.FormActivate(Work_Time);
+end;
+
+procedure TWork_Time.FormShow(Sender: TObject);
+begin
+  pmShowHide.Caption := 'Hide';
+end;
+
+procedure TWork_Time.FormHide(Sender: TObject);
+begin
+  pmShowHide.Caption := 'Show';
 end;
 
 Initialization

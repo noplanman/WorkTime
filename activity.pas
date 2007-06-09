@@ -6,14 +6,12 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Buttons, EButton, ExtCtrls, StdCtrls, JvButton,
   JvTransparentButton, JvExControls, JvComponent, JvGradient, JvSpeedButton,
-  jpeg;
+  jpeg, DBCtrls, DB, DBClient;
 
 type
   TFrm_Activity = class(TForm)
-    cbxProjects: TComboBox;
     memoActivity: TMemo;
     gbActivity: TGroupBox;
-    btnProjectEdit: TSpeedButton;
     pnlButtons: TPanel;
     gradButtons: TJvGradient;
     btnOk: TJvSpeedButton;
@@ -22,13 +20,11 @@ type
     lblActivity: TLabel;
     imgTitleBar: TImage;
     btnClose: TJvSpeedButton;
-    procedure btnProjectEditClick(Sender: TObject);
-    procedure FormShow(Sender: TObject);
+    dbcbxProjects: TDBComboBox;
     procedure imgTitleBarMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
   private
     { Private declarations }
-    procedure refreshProjects;
   public
     { Public declarations }
   end;
@@ -38,42 +34,9 @@ var
 
 implementation
 
-uses projects, main, DateUtils, DB;
+uses globalDefinitions, projects, DateUtils, options;
 
 {$R *.dfm}
-
-procedure TFrm_Activity.refreshProjects;
-begin
-  cbxProjects.Clear;
-  with Work_Time.cdsProjects do
-  begin
-    First;
-    while not EoF do
-    begin
-      cbxProjects.Items.Add(FieldByName('project').Value);
-      Next;
-    end;
-  end;
-  cbxProjects.ItemIndex := 0;
-end;
-
-procedure TFrm_Activity.btnProjectEditClick(Sender: TObject);
-begin
-  Application.CreateForm(TFrm_Projects, Frm_Projects);
-  try
-    if Frm_Projects.ShowModal = mrOk then
-    begin
-      refreshProjects;
-    end;
-  finally
-    Frm_Projects.Release;
-  end;
-end;
-
-procedure TFrm_Activity.FormShow(Sender: TObject);
-begin
-  refreshProjects;
-end;
 
 procedure TFrm_Activity.imgTitleBarMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);

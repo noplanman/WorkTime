@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ShellApi, Buttons, Menus, ExtCtrls, AppEvnts,
   ImgList, HotKeyManager, CoolTrayIcon, DB, DBClient, jpeg,
-  JvComponentBase, JvgLanguageLoader;
+  JvComponentBase, JvgLanguageLoader, Provider;
 
 type 
   TWmMoving = record
@@ -36,26 +36,7 @@ type
     imgList: TImageList;
     hkm: THotKeyManager;
     appEvents: TApplicationEvents;
-    cdsWorkTime: TClientDataSet;
-    cdsActivityList: TClientDataSet;
-    cdsActivity: TClientDataSet;
-    cdsWorkTimeactivitylist_id: TIntegerField;
-    cdsWorkTimeworkstart: TDateTimeField;
-    cdsWorkTimeworkend: TDateTimeField;
-    cdsWorkTimenoonstart: TDateTimeField;
-    cdsWorkTimenoonend: TDateTimeField;
-    cdsActivityListworktime_id: TIntegerField;
-    cdsActivityListactivity_id: TIntegerField;
-    cdsActivityproject_id: TIntegerField;
-    cdsActivityactivity: TMemoField;
     btnChangeActivity: TSpeedButton;
-    dsProjects: TDataSource;
-    cdsProjects: TClientDataSet;
-    cdsProjectsid: TAutoIncField;
-    cdsProjectsproject: TStringField;
-    cdsActivityid: TAutoIncField;
-    cdsActivityListid: TAutoIncField;
-    cdsWorkTimeid: TAutoIncField;
     tmrFade: TTimer;
     procedure btnOptionsClick(Sender: TObject);
     procedure tmrCounterTimer(Sender: TObject);
@@ -64,10 +45,6 @@ type
     procedure pmExitClick(Sender: TObject);
     procedure btnMinimizeClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
-    procedure imgBgMouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
-    procedure lblTimeMouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
     procedure btnInfoClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure hkmHotKeyPressed(HotKey: Cardinal; Index: Word);
@@ -82,6 +59,7 @@ type
     procedure trayIconStartup(Sender: TObject; var ShowMainForm: Boolean);
     procedure FormShow(Sender: TObject);
     procedure FormHide(Sender: TObject);
+    procedure _MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
   protected
   private
     { Private declarations }
@@ -101,7 +79,7 @@ var
 
 implementation
 
-uses globalDefinitions, reg, options, info, activity;
+uses globalDefinitions, reg, options, info, activity, projects,mysql;
 
 var
   mHandle:THandle;
@@ -121,10 +99,46 @@ var
   StartMinimized:Boolean;
   AutoRun:Boolean;
 
+//  DBConn:TMYSQL;
+  DBHost:String;
+  DBPort:Integer;
+  DBUser:String;
+  DBPass:String;
+  DBDatabase:String;
+
   // various variables
   FadeAction:String; // show, hide or close with fade effect
 
 {$R *.dfm}
+
+{*******************************************************************************
+  CUSTOM PROCEDURES AND FUNCTIONS                                          start
+*******************************************************************************}
+{*******************************************************************************
+  PROCEDURES                                                               start
+*******************************************************************************}
+
+// initialize all variables needed at startup
+procedure TWork_Time.Init;
+begin
+  NoonTick := 0;
+  StartedTick := GetTickCount; // Seconds since computer running
+  WtOver := False;
+{  DBConn.host := pAnsiChar(DBHost);
+  DBConn.port := DBPort;
+  DBConn.user := pAnsiChar(DBUser);
+  DBConn.passwd := pAnsiChar(DBPass);
+  DBConn.db := pAnsiChar(DBDatabase);}
+end;
+
+procedure TWork_Time._MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+begin
+  if (ssLeft in Shift) then
+  begin
+    ReleaseCapture;
+    SendMessage(Self.Handle, WM_SYSCOMMAND, SC_MOVE+1,0);
+  end;
+end;
 
 procedure delay(msecs:Cardinal);
 var
@@ -142,44 +156,20 @@ var
 begin
   inherited;
   if SystemParametersInfo(SPI_GETWORKAREA, 0, @WorkArea, 0) then
-    with Message do
-    begin
-      if lParam.Right > WorkArea.Right then
-        OffsetRect(lParam^, WorkArea.Right - lParam.Right, 0);
-      if lParam.Left < WorkArea.Left then
-        OffsetRect(lParam^, WorkArea.Left - lParam.Left, 0);
-      if lParam.Bottom > WorkArea.Bottom then
-        OffsetRect(lParam^, 0, WorkArea.Bottom - lParam.Bottom);
-      if lParam.Top < WorkArea.Top then
-        OffsetRect(lParam^, 0, WorkArea.Top - lParam.Top);
-      Result := HRESULT(True);
-    end;
+  with Message do
+  begin
+    if lParam.Right > WorkArea.Right then
+      OffsetRect(lParam^, WorkArea.Right - lParam.Right, 0);
+    if lParam.Left < WorkArea.Left then
+      OffsetRect(lParam^, WorkArea.Left - lParam.Left, 0);
+    if lParam.Bottom > WorkArea.Bottom then
+      OffsetRect(lParam^, 0, WorkArea.Bottom - lParam.Bottom);
+    if lParam.Top < WorkArea.Top then
+      OffsetRect(lParam^, 0, WorkArea.Top - lParam.Top);
+    Result := HRESULT(True);
+  end;
 end;
 
-// initialize all variables needed at startup
-procedure TWork_Time.Init;
-begin
-  NoonTick := 0;
-  StartedTick := GetTickCount; // Seconds since computer running
-  WtOver := False;
-end;
-
-procedure TWork_Time.FormCreate(Sender: TObject);
-begin
-  Work_Time.Top := Screen.WorkAreaHeight - Height;
-  Work_Time.Left := Screen.WorkAreaWidth - Width;
-end;
-
-procedure TWork_Time.FormActivate(Sender: TObject);
-begin
-  SetWindowLong(Application.Handle,GWL_EXSTYLE,WS_EX_TOOLWINDOW);
-  Work_Time.getOptions;
-  hkm.AddHotKey(HotKeyNoon);
-  StartLog;
-  if not StartMinimized then
-    if Fade then FadeForm('show') else Show
-  else AlphaBlendValue := 0;
-end;
 
 procedure TWork_Time.FadeForm(Action:String);
 begin
@@ -197,8 +187,6 @@ end;
 
 procedure TWork_Time.getOptions;
 begin
-  LogFile := reg.getString(defRegKey,'LogFile',defLogFile);
-  if LogFile = defLogFile then reg.setString(defRegKey,'LogFile',defLogFile);
   Wt := reg.getInteger(defRegKey,'Wt',defWt);
   if Wt = defWt then reg.setInteger(defRegKey,'Wt',defWt);
   NotifyWt := reg.getBoolean(defRegKey,'NotifyWt',defNotifyWt);
@@ -216,11 +204,44 @@ begin
   StartMinimized := reg.getBoolean(defRegKey,'StartMinimized',defStartMinimized);
   if StartMinimized = defStartMinimized then reg.setBoolean(defRegKey,'StartMinimized',defStartMinimized);
   AutoRun := reg.getString(runRegKey,'WorkTime','') <> '';
+
+// Database
+  DBHost := reg.getString(defRegKey,'DBHost',defDBHost);
+  if DBHost = defDBHost then reg.setString(defRegKey,'DBHost',defDBHost);
+  DBUser := reg.getString(defRegKey,'DBUser',defDBUser);
+  if DBUser = defDBUser then reg.setString(defRegKey,'DBUser',defDBUser);
+  DBPass := reg.getString(defRegKey,'DBPass','');
+  if DBPass = defDBPass then reg.setString(defRegKey,'DBPass',defDBPass);
+  DBDatabase := reg.getString(defRegKey,'DBDatabase','');
+  if DBDatabase = defDBDatabase then reg.setString(defRegKey,'DBDatabase',defDBDatabase);
+  DBPort := reg.getInteger(defRegKey,'DBPort',defDBPort);
+  if DBPort = defDBPort then reg.setInteger(defRegKey,'DBPort',defDBPort);
+end;
+
+procedure TWork_Time.StartLog;
+begin
+// FILE
+  if FileExists(LogFile) then
+  begin
+    AssignFile(Log, LogFile);
+    Append(Log);
+  end
+  else
+  begin
+{    LogFile := defLogFile;
+    AssignFile(Log, LogFile);
+    Rewrite(Log);
+    reg.setString(defRegKey,'LogFile',LogFile);}
+  end;
+{  WriteLn(Log, '');
+  WriteLn(Log, '__ ' + FormatDateTime('dd.mm.yyyy', Now) + ' ________________');
+  WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Work Started');
+  CloseFile(Log);}
 end;
 
 procedure TWork_Time.Noon;
 begin
-  Append(Log);
+{  Append(Log);
   if pmNoon.Checked then
   begin
     NoonTick := GetTickCount - NoonTick;
@@ -235,125 +256,115 @@ begin
     TrayIcon.IconIndex := 0;
     WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Noon Finished');
   end;
-  CloseFile(Log);
+  CloseFile(Log);}
 end;
 
-procedure TWork_Time.StartLog;
-begin
-// DB
-  if(not DirectoryExists(dbDataDir)) then CreateDir(dbDataDir);
-  if(FileExists(dbDataDir + 'WorkTime.cds')) then
-    cdsWorkTime.LoadFromFile(dbDataDir+'WorkTime.cds')
-  else
-    cdsWorkTime.SaveToFile(dbDataDir+'WorkTime.cds',dfBinary);
-  if(FileExists(dbDataDir + 'Activity.cds')) then
-    cdsActivity.LoadFromFile(dbDataDir+'Activity.cds')
-  else
-    cdsActivity.SaveToFile(dbDataDir+'Activity.cds',dfBinary);
-  if(FileExists(dbDataDir + 'ActivityList.cds')) then
-    cdsActivityList.LoadFromFile(dbDataDir+'ActivityList.cds')
-  else
-    cdsActivityList.SaveToFile(dbDataDir+'ActivityList.cds',dfBinary);
-  if(FileExists(dbDataDir + 'Projects.cds')) then
-    cdsProjects.LoadFromFile(dbDataDir+'Projects.cds')
-  else
-    cdsProjects.SaveToFile(dbDataDir+'Projects.cds',dfBinary);
+{*******************************************************************************
+  PROCEDURES                                                                 end
+*******************************************************************************}
+{*******************************************************************************
+  FUNCTIONS                                                                start
+*******************************************************************************}
 
-// FILE
-  if FileExists(LogFile) then
-  begin
-    AssignFile(Log, LogFile);
-    Append(Log);
-  end
-  else
-  begin
-    LogFile := defLogFile;
-    AssignFile(Log, LogFile);
-    Rewrite(Log);
-    reg.setString(defRegKey,'LogFile',LogFile);
-  end;
-  WriteLn(Log, '');
-  WriteLn(Log, '__ ' + FormatDateTime('dd.mm.yyyy', Now) + ' ________________');
-  WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Work Started');
-  CloseFile(Log);
+
+
+{*******************************************************************************
+  FUNCTIONS                                                                  end
+*******************************************************************************}
+{*******************************************************************************
+  CUSTOM PROCEDURES AND FUNCTIONS                                            end
+*******************************************************************************}
+
+procedure TWork_Time.FormCreate(Sender: TObject);
+begin
+  Top := Screen.WorkAreaHeight - Height;
+  Left := Screen.WorkAreaWidth - Width;
+end;
+
+procedure TWork_Time.FormActivate(Sender: TObject);
+begin
+  SetWindowLong(Application.Handle,GWL_EXSTYLE,WS_EX_TOOLWINDOW);
+  getOptions;
+
+  hkm.AddHotKey(HotKeyNoon);
+  StartLog;
+  if not StartMinimized then
+    if Fade then FadeForm('show') else Show
+  else AlphaBlendValue := 0;
 end;
 
 procedure TWork_Time.btnOptionsClick(Sender: TObject);
-var
-  SameFile:Boolean;
 begin
   hkm.RemoveHotKey(HotKeyNoon);
-  Application.CreateForm(TFrm_Options, Frm_Options);
-  try
-    with Frm_Options do
+  with Frm_Options do
+  begin
+    cbNotifyWt.Checked := NotifyWt;
+    seWtSeconds.Value := Wt mod 60;
+    seWtMinutes.Value := Wt div 60 mod 60;
+    seWtHours.Value   := Wt div 60 div 60;
+    seWtSeconds.Enabled := NotifyWt;
+    seWtMinutes.Enabled := NotifyWt;
+    seWtHours.Enabled := NotifyWt;
+    editNotifyWtBtTitle.Text := NotifyWtBtTitle;
+    editNotifyWtBtTitle.Enabled := NotifyWt;
+    memoNotifyWtBtMessage.Text := NotifyWtBtMessage;
+    memoNotifyWtBtMessage.Enabled := NotifyWt;
+    hcNoon.HotKey := HotKeyNoon;
+    cbFade.Checked := Fade;
+    tbFadeSpeed.Enabled := Fade;
+    tbFadeSpeed.Position := FadeSpeed;
+    cbStartMinimized.Checked := StartMinimized;
+    cbAutoRun.Checked := AutoRun;
+
+    //Database
+    editDBHost.Text := DBHost;
+    editDBPort.Text := IntToStr(DBPort);
+    editDBUser.Text := DBUser;
+    editDBPass.Text := DBPass;
+    editDBDatabase.Text := DBDatabase;
+
+    if Frm_Options.ShowModal = mrOK then
     begin
-      lblCurrentDir.Caption := LogFile;
-      lblCurrentDir.Hint := LogFile;
-      saveDialog.InitialDir := ExtractFilePath(LogFile);
-      cbNotifyWt.Checked := NotifyWt;
-      seWtSeconds.Value := Wt mod 60;
-      seWtMinutes.Value := Wt div 60 mod 60;
-      seWtHours.Value   := Wt div 60 div 60;
-      seWtSeconds.Enabled := NotifyWt;
-      seWtMinutes.Enabled := NotifyWt;
-      seWtHours.Enabled := NotifyWt;
-      editNotifyWtBtTitle.Text := NotifyWtBtTitle;
-      memoNotifyWtBtMessage.Text := NotifyWtBtMessage;
-      hcNoon.HotKey := HotKeyNoon;
-      cbFade.Checked := Fade;
-      tbFadeSpeed.Enabled := Fade;
-      tbFadeSpeed.Position := FadeSpeed;
-      cbStartMinimized.Checked := StartMinimized;
-      cbAutoRun.Checked := AutoRun;
-
-      if Frm_Options.ShowModal = mrOK then
+      NotifyWt := cbNotifyWt.Checked;
+      reg.setBoolean(defRegKey,'NotifyWt',NotifyWt);
+      if NotifyWt then
       begin
-        if cbNewDir.Checked then
-        begin
-          SameFile := (LogFile = editNewDir.Text) or (editNewDir.Text = '');
-          if not SameFile then
-          begin
-            if CopyFile(pChar(LogFile),pChar(saveDialog.FileName),False) then
-            begin
-              DeleteFile(LogFile);
-              LogFile := saveDialog.FileName;
-              reg.setString(defRegKey,'LogFile',LogFile);
-              StartLog;
-            end;
-          end;
-        end;
+        Wt := (seWtHours.Value*60*60) +
+              (seWtMinutes.Value*60) +
+              (seWtSeconds.Value);
+        reg.setInteger(defRegKey,'Wt',Wt);
+        WtOver := False;
 
-        NotifyWt := cbNotifyWt.Checked;
-        reg.setBoolean(defRegKey,'NotifyWt',NotifyWt);
-        if NotifyWt then
-        begin
-          Wt := (seWtHours.Value*60*60) +
-                (seWtMinutes.Value*60) +
-                (seWtSeconds.Value);
-          reg.setInteger(defRegKey,'Wt',Wt);
-          WtOver := False;
-
-          NotifyWtBtTitle := editNotifyWtBtTitle.Text;
-          reg.setString(defRegKey,'NotifyWtBtTitle',NotifyWtBtTitle);
-          NotifyWtBtMessage := memoNotifyWtBtMessage.Text;
-          reg.setString(defRegKey,'NotifyWtBtMessage',NotifyWtBtMessage);
-        end;
-
-        HotKeyNoon := hcNoon.HotKey;
-        reg.setInteger(defRegKey,'HotKeyNoon',HotKeyNoon);
-        Fade := cbFade.Checked;
-        reg.setBoolean(defRegKey,'Fade',Fade);
-        FadeSpeed := tbFadeSpeed.Position;
-        reg.setInteger(defRegKey,'FadeSpeed',FadeSpeed);
-        StartMinimized := cbStartMinimized.Checked;
-        reg.setBoolean(defRegKey,'StartMinimized',StartMinimized);
-        AutoRun := cbAutoRun.Checked;
-        if AutoRun then reg.setString(runRegKey,progName,ParamStr(0)) else reg.delValue(runRegKey,progName);
+        NotifyWtBtTitle := editNotifyWtBtTitle.Text;
+        reg.setString(defRegKey,'NotifyWtBtTitle',NotifyWtBtTitle);
+        NotifyWtBtMessage := memoNotifyWtBtMessage.Text;
+        reg.setString(defRegKey,'NotifyWtBtMessage',NotifyWtBtMessage);
       end;
-      hkm.AddHotKey(HotKeyNoon);
+
+      HotKeyNoon := hcNoon.HotKey;
+      reg.setInteger(defRegKey,'HotKeyNoon',HotKeyNoon);
+      Fade := cbFade.Checked;
+      reg.setBoolean(defRegKey,'Fade',Fade);
+      FadeSpeed := tbFadeSpeed.Position;
+      reg.setInteger(defRegKey,'FadeSpeed',FadeSpeed);
+      StartMinimized := cbStartMinimized.Checked;
+      reg.setBoolean(defRegKey,'StartMinimized',StartMinimized);
+      AutoRun := cbAutoRun.Checked;
+      if AutoRun then reg.setString(runRegKey,progName,ParamStr(0)) else reg.delValue(runRegKey,progName);
+
+      //Database
+      DBHost := editDBHost.Text;
+      reg.setString(defRegKey,'DBHost',DBHost);
+      DBPort := StrToInt(editDBPort.Text);
+      reg.setInteger(defRegKey,'DBPort',DBPort);
+      DBUser := editDBUser.Text;
+      reg.setString(defRegKey,'DBUser',DBUser);
+      DBPass := editDBPass.Text;
+      reg.setString(defRegKey,'DBPass',DBPass);
+      DBDatabase := editDBDatabase.Text;
+      reg.setString(defRegKey,'DBDatabase',DBDatabase);
     end;
-  finally
-    Frm_Options.Release;
+    hkm.AddHotKey(HotKeyNoon);
   end;
 end;
 
@@ -410,7 +421,7 @@ end;
 procedure TWork_Time.btnMinimizeClick(Sender: TObject);
 begin
   if Fade then FadeForm('auto') else
-  if Visible then Hide else Show;
+    if Visible then Hide else Show;
 end;
 
 procedure TWork_Time.pmExitClick(Sender: TObject);
@@ -421,26 +432,6 @@ end;
 procedure TWork_Time.btnCloseClick(Sender: TObject);
 begin
   if Fade then FadeForm('close') else Close;
-end;
-
-procedure TWork_Time.imgBgMouseMove(Sender: TObject; Shift: TShiftState; X,
-  Y: Integer);
-begin
-  if (ssLeft in Shift) then
-  begin
-    ReleaseCapture;
-    SendMessage(Work_Time.Handle, WM_SYSCOMMAND, SC_MOVE+1,0);
-  end;
-end;
-
-procedure TWork_Time.lblTimeMouseMove(Sender: TObject; Shift: TShiftState;
-  X, Y: Integer);
-begin
-  if (ssLeft in Shift) then
-  begin
-    ReleaseCapture;
-    SendMessage(Work_Time.Handle, WM_SYSCOMMAND, SC_MOVE+1,0);
-  end;
 end;
 
 procedure TWork_Time.btnInfoClick(Sender: TObject);
@@ -456,7 +447,7 @@ end;
 procedure TWork_Time.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
-  AssignFile(Log, LogFile);
+{  AssignFile(Log, LogFile);
   Append(Log);
   WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Work Finished');
   WriteLn(Log, '------------------------------');
@@ -464,7 +455,7 @@ begin
   WriteLn(Log, 'Total working minutes : ' + FloatToStr(m));
   WriteLn(Log, 'Total working seconds : ' + FloatToStr(s));
   WriteLn(Log, '------------------------------');
-  CloseFile(Log);
+  CloseFile(Log);}
   hkm.ClearHotKeys;
 end;
 
@@ -493,16 +484,12 @@ end;
 procedure TWork_Time.trayIconBalloonHintClick(Sender: TObject);
 begin
   trayIcon.IconIndex := 0;
+  if not Visible then Show;
 end;
 
 procedure TWork_Time.btnChangeActivityClick(Sender: TObject);
 begin
-  Application.CreateForm(TFrm_Activity, Frm_Activity);
-  try
-    Frm_Activity.ShowModal;
-  finally
-    Frm_Activity.Release;
-  end;
+  Frm_Activity.ShowModal;
 end;
 
 procedure TWork_Time.tmrFadeTimer(Sender: TObject);

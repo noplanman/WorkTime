@@ -5,11 +5,11 @@ object Work_Time: TWork_Time
   BorderStyle = bsNone
   Caption = 'Work_Time'
   ClientHeight = 100
-  ClientWidth = 100
+  ClientWidth = 115
   Color = clSilver
   TransparentColorValue = clFuchsia
-  Constraints.MaxHeight = 127
-  Constraints.MaxWidth = 108
+  Constraints.MaxHeight = 136
+  Constraints.MaxWidth = 123
   Constraints.MinHeight = 127
   Constraints.MinWidth = 100
   Font.Charset = DEFAULT_CHARSET
@@ -372,7 +372,7 @@ object Work_Time: TWork_Time
       8FCCD5D5A6A5BFFE90F703FF0076F5A69FF6FEDFE9FE97FE4FD93A1FF81D0FF6
       38F3EFFF005FE2FEC7317AB93A3EBD5FE2D5FC5563FF00AEE5F1D3FD4BFB3CC9
       D55FFFD9}
-    OnMouseMove = imgBgMouseMove
+    OnMouseMove = _MouseMove
   end
   object lblTime: TLabel
     Left = 81
@@ -388,7 +388,7 @@ object Work_Time: TWork_Time
     Font.Style = []
     ParentFont = False
     Transparent = True
-    OnMouseMove = lblTimeMouseMove
+    OnMouseMove = _MouseMove
   end
   object btnOptions: TSpeedButton
     Left = 6
@@ -748,101 +748,6 @@ object Work_Time: TWork_Time
     OnException = appEventsException
     Left = 65520
     Top = 65520
-  end
-  object cdsWorkTime: TClientDataSet
-    Active = True
-    Aggregates = <>
-    Params = <>
-    Left = 65520
-    Top = 65520
-    Data = {
-      810000009619E0BD010000001800000006000000000003000000810002696404
-      000100000000000F61637469766974796C6973745F6964040001000000000009
-      776F726B7374617274080008000000000007776F726B656E6408000800000000
-      00096E6F6F6E73746172740800080000000000076E6F6F6E656E640800080000
-      0000000000}
-    object cdsWorkTimeid: TAutoIncField
-      FieldName = 'id'
-    end
-    object cdsWorkTimeactivitylist_id: TIntegerField
-      FieldName = 'activitylist_id'
-    end
-    object cdsWorkTimeworkstart: TDateTimeField
-      FieldName = 'workstart'
-    end
-    object cdsWorkTimeworkend: TDateTimeField
-      FieldName = 'workend'
-    end
-    object cdsWorkTimenoonstart: TDateTimeField
-      FieldName = 'noonstart'
-    end
-    object cdsWorkTimenoonend: TDateTimeField
-      FieldName = 'noonend'
-    end
-  end
-  object cdsActivityList: TClientDataSet
-    Active = True
-    Aggregates = <>
-    Params = <>
-    Left = 65520
-    Top = 65520
-    Data = {
-      4D0000009619E0BD0100000018000000030000000000030000004D0002696404
-      000100000000000B776F726B74696D655F696404000100000000000B61637469
-      766974795F696404000100000000000000}
-    object cdsActivityListid: TAutoIncField
-      FieldName = 'id'
-    end
-    object cdsActivityListworktime_id: TIntegerField
-      FieldName = 'worktime_id'
-    end
-    object cdsActivityListactivity_id: TIntegerField
-      FieldName = 'activity_id'
-    end
-  end
-  object cdsActivity: TClientDataSet
-    Active = True
-    Aggregates = <>
-    Params = <>
-    Left = 65520
-    Top = 65520
-    Data = {
-      5C0000009619E0BD0100000018000000030000000000030000005C0002696404
-      000100000000000A70726F6A6563745F69640400010000000000086163746976
-      69747904004B0000000100075355425459504502004900050054657874000000}
-    object cdsActivityid: TAutoIncField
-      FieldName = 'id'
-    end
-    object cdsActivityproject_id: TIntegerField
-      FieldName = 'project_id'
-    end
-    object cdsActivityactivity: TMemoField
-      FieldName = 'activity'
-      BlobType = ftMemo
-    end
-  end
-  object dsProjects: TDataSource
-    DataSet = cdsProjects
-    Left = 65520
-    Top = 65520
-  end
-  object cdsProjects: TClientDataSet
-    Active = True
-    Aggregates = <>
-    Params = <>
-    Left = 65520
-    Top = 65520
-    Data = {
-      6C0000009619E0BD0100000018000000020000000000030000006C0002696404
-      0001000200010007535542545950450200490008004175746F696E6300077072
-      6F6A656374010049000000010005574944544802000200140001000C4155544F
-      494E4356414C55450400010001000000}
-    object cdsProjectsid: TAutoIncField
-      FieldName = 'id'
-    end
-    object cdsProjectsproject: TStringField
-      FieldName = 'project'
-    end
   end
   object tmrFade: TTimer
     Enabled = False

@@ -9,7 +9,6 @@ uses
 
 type
   TFrm_Info = class(TForm)
-    pnlBg: TPanel;
     imgPic: TImage;
     lblName: TLabel;
     lblAuthor: TLabel;

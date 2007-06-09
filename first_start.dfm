@@ -1,42 +1,58 @@
-object Frm_Activity: TFrm_Activity
-  Left = 502
-  Top = 195
+object Frm_First: TFrm_First
+  Left = 493
+  Top = 313
   BorderIcons = []
   BorderStyle = bsNone
-  Caption = 'Frm_Activity'
-  ClientHeight = 188
-  ClientWidth = 265
-  Color = clBtnFace
+  BorderWidth = 1
+  Caption = 'First Run'
+  ClientHeight = 269
+  ClientWidth = 261
+  Color = clGray
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
+  FormStyle = fsStayOnTop
   OldCreateOrder = False
   Position = poScreenCenter
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object imgTitleBar: TImage
+  object imgTitle: TImage
     Left = 0
     Top = 0
-    Width = 265
-    Height = 20
+    Width = 261
+    Height = 30
     Align = alTop
     Picture.Data = {
-      0A544A504547496D6167656B010000FFD8FFE000104A46494600010200006400
+      0A544A504547496D61676570010000FFD8FFE000104A46494600010200006400
       640000FFEC00114475636B7900010004000000640000FFEE000E41646F626500
       64C000000001FFDB008400010101010101010101010101010101010101010101
       0101010101010101010101010101010101010101010102020202020202020202
       0203030303030303030303010101010101010201010202020102020303030303
       0303030303030303030303030303030303030303030303030303030303030303
-      030303030303030303030303FFC00011080014000A03011100021101031101FF
-      C4005C0001000300000000000000000000000000000506070101000000000000
-      00000000000000000000100000020905000000000000000000000000030191D1
-      D25393A304066517571828110100000000000000000000000000000000FFDA00
-      0C03010002110311003F00A1F79739E36C4659EE00779739E36C4659EE0096D9
-      5B2805A90C00D95B2805A90C0195FADB49AA01EB6D26A80FFFD9}
+      030303030303030303030303FFC0001108001E000A03011100021101031101FF
+      C4005A0001010101000000000000000000000000000807090101000000000000
+      000000000000000000001000010205050100000000000000000000010016A1D1
+      920353025213D35405110100000000000000000000000000000000FFDA000C03
+      010002110311003F00EEA38346F8892038346F889209D1DC321AC4D01DC321AC
+      4D04B2ED3944501DA7288A0C3B93EB79EE576BB10393EB79EE576BB107FFD9}
     Stretch = True
-    OnMouseMove = imgTitleBarMouseMove
+    OnMouseMove = _MouseMove
+  end
+  object lblMessage: TLabel
+    Left = 5
+    Top = 30
+    Width = 3
+    Height = 13
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    ParentFont = False
+    Transparent = True
   end
   object btnClose: TJvSpeedButton
     Left = 250
@@ -62,75 +78,168 @@ object Frm_Activity: TFrm_Activity
     HotTrackFont.Style = []
     ModalResult = 2
     Transparent = True
+    OnClick = btnCloseClick
   end
-  object gbActivity: TGroupBox
-    Left = 0
-    Top = 20
-    Width = 265
-    Height = 144
-    Align = alClient
-    BiDiMode = bdLeftToRight
-    Caption = 'Activities'
-    Color = 11184810
+  object lblTitle: TLabel
+    Left = 5
+    Top = 5
+    Width = 45
+    Height = 13
+    Caption = 'lblTitle'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
+    Font.Color = clWhite
+    Font.Height = -11
+    Font.Name = 'Verdana'
+    Font.Style = [fsBold, fsUnderline]
+    ParentFont = False
+    Transparent = True
+    OnMouseMove = _MouseMove
+  end
+  object btnDBTestConnection: TSpeedButton
+    Left = 155
+    Top = 220
+    Width = 100
+    Height = 20
+    Caption = 'Test Connection'
+    Flat = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
-    Font.Style = []
-    ParentBiDiMode = False
-    ParentColor = False
+    Font.Style = [fsBold]
     ParentFont = False
+    OnClick = btnDBTestConnectionClick
+  end
+  object btnDefaults: TSpeedButton
+    Left = 5
+    Top = 220
+    Width = 60
+    Height = 20
+    Caption = 'Defaults'
+    Flat = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+    OnClick = btnDefaultsClick
+  end
+  object editDBUser: TLabeledEdit
+    Left = 5
+    Top = 110
+    Width = 250
+    Height = 21
+    EditLabel.Width = 48
+    EditLabel.Height = 13
+    EditLabel.Caption = 'Username'
+    EditLabel.Color = clGray
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWhite
+    EditLabel.Font.Height = -11
+    EditLabel.Font.Name = 'MS Sans Serif'
+    EditLabel.Font.Style = []
+    EditLabel.ParentColor = False
+    EditLabel.ParentFont = False
+    EditLabel.Transparent = True
+    TabOrder = 2
+    OnChange = InfosComplete
+  end
+  object editDBPort: TLabeledEdit
+    Left = 175
+    Top = 70
+    Width = 81
+    Height = 21
+    EditLabel.Width = 19
+    EditLabel.Height = 13
+    EditLabel.Caption = 'Port'
+    EditLabel.Color = clGray
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWhite
+    EditLabel.Font.Height = -11
+    EditLabel.Font.Name = 'MS Sans Serif'
+    EditLabel.Font.Style = []
+    EditLabel.ParentColor = False
+    EditLabel.ParentFont = False
+    EditLabel.Transparent = True
+    TabOrder = 1
+    OnChange = InfosComplete
+  end
+  object editDBPass: TLabeledEdit
+    Left = 5
+    Top = 150
+    Width = 250
+    Height = 21
+    EditLabel.Width = 46
+    EditLabel.Height = 13
+    EditLabel.Caption = 'Password'
+    EditLabel.Color = clGray
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWhite
+    EditLabel.Font.Height = -11
+    EditLabel.Font.Name = 'MS Sans Serif'
+    EditLabel.Font.Style = []
+    EditLabel.ParentColor = False
+    EditLabel.ParentFont = False
+    EditLabel.Transparent = True
+    TabOrder = 3
+  end
+  object editDBHost: TLabeledEdit
+    Left = 5
+    Top = 70
+    Width = 166
+    Height = 21
+    EditLabel.Width = 22
+    EditLabel.Height = 13
+    EditLabel.Caption = 'Host'
+    EditLabel.Color = clGray
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWhite
+    EditLabel.Font.Height = -11
+    EditLabel.Font.Name = 'MS Sans Serif'
+    EditLabel.Font.Style = []
+    EditLabel.ParentColor = False
+    EditLabel.ParentFont = False
+    EditLabel.Transparent = True
     TabOrder = 0
-    object lblProject: TLabel
-      Left = 8
-      Top = 25
-      Width = 73
-      Height = 13
-      AutoSize = False
-      Caption = 'Project'
-    end
-    object lblActivity: TLabel
-      Left = 8
-      Top = 50
-      Width = 73
-      Height = 13
-      AutoSize = False
-      Caption = 'Activity'
-    end
-    object memoActivity: TMemo
-      Left = 80
-      Top = 44
-      Width = 176
-      Height = 89
-      TabOrder = 0
-    end
-    object dbcbxProjects: TDBComboBox
-      Left = 80
-      Top = 20
-      Width = 176
-      Height = 21
-      Style = csDropDownList
-      DataField = 'project'
-      ItemHeight = 13
-      Sorted = True
-      TabOrder = 1
-    end
+    OnChange = InfosComplete
+  end
+  object editDBDatabase: TLabeledEdit
+    Left = 5
+    Top = 190
+    Width = 250
+    Height = 21
+    EditLabel.Width = 46
+    EditLabel.Height = 13
+    EditLabel.Caption = 'Database'
+    EditLabel.Color = clGray
+    EditLabel.Font.Charset = DEFAULT_CHARSET
+    EditLabel.Font.Color = clWhite
+    EditLabel.Font.Height = -11
+    EditLabel.Font.Name = 'MS Sans Serif'
+    EditLabel.Font.Style = []
+    EditLabel.ParentColor = False
+    EditLabel.ParentFont = False
+    EditLabel.Transparent = True
+    TabOrder = 4
+    OnChange = InfosComplete
   end
   object pnlButtons: TPanel
     Left = 0
-    Top = 164
-    Width = 265
+    Top = 245
+    Width = 261
     Height = 24
     Align = alBottom
     BevelOuter = bvNone
-    TabOrder = 1
+    TabOrder = 5
     object gradButtons: TJvGradient
       Left = 0
       Top = 0
-      Width = 265
+      Width = 261
       Height = 24
-      StartColor = 4473924
-      EndColor = 11184810
+      Style = grVertical
+      StartColor = clSilver
+      EndColor = clGray
     end
     object btnOk: TJvSpeedButton
       Left = 240
@@ -215,6 +324,7 @@ object Frm_Activity: TFrm_Activity
       ModalResult = 1
       NumGlyphs = 2
       Transparent = True
+      OnClick = btnOkClick
     end
     object btnCancel: TJvSpeedButton
       Left = 220
@@ -299,6 +409,7 @@ object Frm_Activity: TFrm_Activity
       ModalResult = 2
       NumGlyphs = 2
       Transparent = True
+      OnClick = btnCancelClick
     end
   end
 end

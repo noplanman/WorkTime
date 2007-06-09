@@ -79,6 +79,7 @@ object Frm_Projects: TFrm_Projects
       Top = 20
       Width = 20
       Height = 20
+      Enabled = False
       Flat = True
       Glyph.Data = {
         36080000424D3608000000000000360000002800000020000000100000000100
@@ -250,20 +251,16 @@ object Frm_Projects: TFrm_Projects
       Height = 21
       TabOrder = 0
       OnChange = editProjectChange
+      OnKeyPress = editProjectKeyPress
     end
-    object dbgProjects: TDBGrid
+    object dblProjects: TDBListBox
       Left = 80
-      Top = 44
-      Width = 240
-      Height = 140
-      DataSource = Work_Time.dsProjects
-      Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgMultiSelect]
+      Top = 45
+      Width = 241
+      Height = 141
+      DataField = 'project'
+      ItemHeight = 13
       TabOrder = 1
-      TitleFont.Charset = DEFAULT_CHARSET
-      TitleFont.Color = clWindowText
-      TitleFont.Height = -11
-      TitleFont.Name = 'MS Sans Serif'
-      TitleFont.Style = []
     end
   end
   object pnlButtons: TPanel
@@ -449,6 +446,49 @@ object Frm_Projects: TFrm_Projects
       ModalResult = 2
       NumGlyphs = 2
       Transparent = True
+    end
+  end
+  object dsProjects: TDataSource
+    DataSet = cdsProjects
+    Left = 65520
+    Top = 65520
+  end
+  object cdsProjects: TClientDataSet
+    Active = True
+    Aggregates = <>
+    FieldDefs = <
+      item
+        Name = 'id'
+        Attributes = [faReadonly]
+        DataType = ftAutoInc
+      end
+      item
+        Name = 'project'
+        DataType = ftString
+        Size = 20
+      end>
+    IndexDefs = <>
+    Params = <
+      item
+        DataType = ftInteger
+        ParamType = ptUnknown
+      end>
+    StoreDefs = True
+    Left = 65520
+    Top = 65520
+    Data = {
+      6C0000009619E0BD0100000018000000020000000000030000006C0002696404
+      0001000200010007535542545950450200490008004175746F696E6300077072
+      6F6A656374010049000000010005574944544802000200140001000C4155544F
+      494E4356414C55450400010001000000}
+    object cdsProjectsid: TAutoIncField
+      FieldName = 'id'
+      KeyFields = 'id'
+    end
+    object cdsProjectsproject: TStringField
+      FieldName = 'project'
+      KeyFields = 'project'
+      Required = True
     end
   end
 end

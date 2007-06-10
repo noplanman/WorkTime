@@ -12,12 +12,6 @@ const
   progAuthorEmail = 'armyman@armyman.ch';
   progAuthorHomepage = 'www.armyman.ch';
 
-  // Database
-  dbTblActivity = 'activity';
-  dbTblActivityList = 'activity_list';
-  dbTblProject = 'project';
-  dbTblWorktime = 'worktime';
-
   clrWrong = $0064FFFF;
 
 var
@@ -34,11 +28,7 @@ var
   defStartMinimized:Boolean;
   defAutoRun:Boolean;
 
-  defDBHost:String;
-  defDBPort:Integer;
-  defDBUser:String;
-  defDBPass:String;
-  defDBDatabase:String;
+  defLogFilePath:String;
 
 implementation
 
@@ -58,7 +48,7 @@ begin
     'The Working Time you have set is over!';
 
   defHotKeyNoon :=
-    GetHotKey(MOD_CONTROL+MOD_ALT,VK_SPACE);
+    GetHotKey(MOD_CONTROL+MOD_ALT,ord('M'));
 
   defFade :=
     True;
@@ -70,16 +60,8 @@ begin
   defAutoRun :=
     True;
 
-  defDBHost :=
-    'localhost';
-  defDBPort :=
-    3306;
-  defDBUser :=
-    'root';
-  defDBPass :=
-    '';
-  defDBDatabase :=
-    'WorkTime';
+  defLogFilePath :=
+    ExtractFilePath(ParamStr(0))+'WorkTimeLog.txt';
 end;
 
 initialization

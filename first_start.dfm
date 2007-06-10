@@ -78,7 +78,7 @@ object Frm_First: TFrm_First
     HotTrackFont.Style = []
     ModalResult = 2
     Transparent = True
-    OnClick = btnCloseClick
+    OnClick = CloseClick
   end
   object lblTitle: TLabel
     Left = 5
@@ -95,12 +95,12 @@ object Frm_First: TFrm_First
     Transparent = True
     OnMouseMove = _MouseMove
   end
-  object btnDBTestConnection: TSpeedButton
-    Left = 155
-    Top = 220
-    Width = 100
+  object btnBrowse: TSpeedButton
+    Left = 237
+    Top = 62
+    Width = 20
     Height = 20
-    Caption = 'Test Connection'
+    Caption = '...'
     Flat = True
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -108,90 +108,16 @@ object Frm_First: TFrm_First
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
     ParentFont = False
-    OnClick = btnDBTestConnectionClick
+    OnClick = btnBrowseClick
   end
-  object btnDefaults: TSpeedButton
+  object editFilename: TLabeledEdit
     Left = 5
-    Top = 220
-    Width = 60
-    Height = 20
-    Caption = 'Defaults'
-    Flat = True
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWhite
-    Font.Height = -11
-    Font.Name = 'MS Sans Serif'
-    Font.Style = [fsBold]
-    ParentFont = False
-    OnClick = btnDefaultsClick
-  end
-  object editDBUser: TLabeledEdit
-    Left = 5
-    Top = 110
-    Width = 250
+    Top = 62
+    Width = 228
     Height = 21
-    EditLabel.Width = 48
+    EditLabel.Width = 56
     EditLabel.Height = 13
-    EditLabel.Caption = 'Username'
-    EditLabel.Color = clGray
-    EditLabel.Font.Charset = DEFAULT_CHARSET
-    EditLabel.Font.Color = clWhite
-    EditLabel.Font.Height = -11
-    EditLabel.Font.Name = 'MS Sans Serif'
-    EditLabel.Font.Style = []
-    EditLabel.ParentColor = False
-    EditLabel.ParentFont = False
-    EditLabel.Transparent = True
-    TabOrder = 2
-    OnChange = InfosComplete
-  end
-  object editDBPort: TLabeledEdit
-    Left = 175
-    Top = 70
-    Width = 81
-    Height = 21
-    EditLabel.Width = 19
-    EditLabel.Height = 13
-    EditLabel.Caption = 'Port'
-    EditLabel.Color = clGray
-    EditLabel.Font.Charset = DEFAULT_CHARSET
-    EditLabel.Font.Color = clWhite
-    EditLabel.Font.Height = -11
-    EditLabel.Font.Name = 'MS Sans Serif'
-    EditLabel.Font.Style = []
-    EditLabel.ParentColor = False
-    EditLabel.ParentFont = False
-    EditLabel.Transparent = True
-    TabOrder = 1
-    OnChange = InfosComplete
-  end
-  object editDBPass: TLabeledEdit
-    Left = 5
-    Top = 150
-    Width = 250
-    Height = 21
-    EditLabel.Width = 46
-    EditLabel.Height = 13
-    EditLabel.Caption = 'Password'
-    EditLabel.Color = clGray
-    EditLabel.Font.Charset = DEFAULT_CHARSET
-    EditLabel.Font.Color = clWhite
-    EditLabel.Font.Height = -11
-    EditLabel.Font.Name = 'MS Sans Serif'
-    EditLabel.Font.Style = []
-    EditLabel.ParentColor = False
-    EditLabel.ParentFont = False
-    EditLabel.Transparent = True
-    TabOrder = 3
-  end
-  object editDBHost: TLabeledEdit
-    Left = 5
-    Top = 70
-    Width = 166
-    Height = 21
-    EditLabel.Width = 22
-    EditLabel.Height = 13
-    EditLabel.Caption = 'Host'
+    EditLabel.Caption = 'Logfile Path'
     EditLabel.Color = clGray
     EditLabel.Font.Charset = DEFAULT_CHARSET
     EditLabel.Font.Color = clWhite
@@ -202,27 +128,6 @@ object Frm_First: TFrm_First
     EditLabel.ParentFont = False
     EditLabel.Transparent = True
     TabOrder = 0
-    OnChange = InfosComplete
-  end
-  object editDBDatabase: TLabeledEdit
-    Left = 5
-    Top = 190
-    Width = 250
-    Height = 21
-    EditLabel.Width = 46
-    EditLabel.Height = 13
-    EditLabel.Caption = 'Database'
-    EditLabel.Color = clGray
-    EditLabel.Font.Charset = DEFAULT_CHARSET
-    EditLabel.Font.Color = clWhite
-    EditLabel.Font.Height = -11
-    EditLabel.Font.Name = 'MS Sans Serif'
-    EditLabel.Font.Style = []
-    EditLabel.ParentColor = False
-    EditLabel.ParentFont = False
-    EditLabel.Transparent = True
-    TabOrder = 4
-    OnChange = InfosComplete
   end
   object pnlButtons: TPanel
     Left = 0
@@ -231,7 +136,7 @@ object Frm_First: TFrm_First
     Height = 24
     Align = alBottom
     BevelOuter = bvNone
-    TabOrder = 5
+    TabOrder = 1
     object gradButtons: TJvGradient
       Left = 0
       Top = 0
@@ -409,7 +314,21 @@ object Frm_First: TFrm_First
       ModalResult = 2
       NumGlyphs = 2
       Transparent = True
-      OnClick = btnCancelClick
+      OnClick = CloseClick
     end
+  end
+  object cbDesktopShortcut: TCheckBox
+    Left = 5
+    Top = 96
+    Width = 250
+    Height = 17
+    Caption = 'Create Desktop Shortcut'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 2
   end
 end

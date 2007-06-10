@@ -1,40 +1,26 @@
 unit functions;
 
 interface
-uses
-  mysql;
+const
+  //required for desktop shortcut
+  IID_IPersistFile: TGUID = (D1:$0000010B;D2:$0000;D3:$0000;D4:($C0,$00,$00,$00,$00,$00,$00,$46));
 
-function TestMySQLConnection(DBHost,DBUser,DBPass:String;DBPort:Integer=3306;DBDatabase:String=''):Boolean;
+// FUNCTIONS
+function Timestamp(Const D:TDateTime):Cardinal;
 function IsNumeric(const S:String):Boolean;
+function CreateDesktopShortcut(PathObj,PathLink,Desc,Workdir:String):Boolean;
+function GetDesktopFolder:String;
+
+// PROCEDURES
+procedure ForceKillApplication(ARestart: boolean = False);
 
 implementation
+uses
+  activeX,comobj,shlobj,Windows,SysUtils, DateUtils;
 
-{*******************************************************************************
-  Database
-*******************************************************************************}
-function TestMySQLConnection(DBHost,DBUser,DBPass:String;DBPort:Integer=3306;DBDatabase:String=''):Boolean;
-var
-  MySQLConn : PMYSQL;
-  res : Boolean;
+function Timestamp(Const D:TDateTime):Cardinal;
 begin
-  res := True;
-  MySQLConn := mysql_init(nil);
-  if(mysql_real_connect(
-    MySQLConn,
-    pChar(DBHost),
-    pChar(DBUser),
-    pChar(DBPass),
-    nil,
-    DBPort,
-    nil,
-    0)) = nil
-  then res := False;
-  if(res and (DBDatabase<>''))then
-  begin
-    res := (mysql_select_db(MySQLConn,pChar(DBDatabase))=0);
-  end;
-  mysql_close(MySQLConn);
-  result := res;
+  Result := DateTimeToUnix(D);
 end;
 
 function IsNumeric(Const S:String):Boolean;
@@ -49,6 +35,57 @@ begin
     if not res then break;
   end;
   Result := res;
+end;
+
+function CreateDesktopShortcut(PathObj,PathLink,Desc,Workdir:String):Boolean;
+var
+  psl: IShellLink;
+  ppf: IPersistFile;
+begin
+  Result := False;
+  if Succeeded(CoCreateInstance(CLSID_ShellLink,nil,CLSCTX_INPROC_SERVER,IID_IShellLinkA,psl)) then
+  begin
+    psl.SetPath(pChar(PathObj));
+    psl.SetDescription(pChar(Desc));
+    psl.SetWorkingDirectory(pChar(Workdir));
+    if Succeeded(psl.QueryInterface(IID_IPersistFile,ppf)) then
+    begin
+      ppf.Save(StringToOleStr(PathLink),True);
+      Result := True;
+    end;
+  end;
+end;
+
+function GetDesktopFolder:String;
+var
+  pidl:PItemIDList;
+  Path:array[0..250] of char;
+begin
+  if Succeeded(SHGetSpecialFolderLocation(0,CSIDL_DESKTOP,pidl)) then
+  begin
+    SHGetPathFromIDList(pidl,Path);
+    Result := Path;
+  end
+  else
+  begin
+    Result := '';
+  end;
+end;
+
+procedure ForceKillApplication(ARestart: boolean = False);
+var
+  AStartInfo: TStartupInfo;
+  AProcInfo: TProcessInformation;
+begin
+  if ARestart then
+  begin
+    GetStartupInfo(AStartInfo);
+    FillChar(AProcInfo, SizeOf(TProcessInformation), #0);
+    CreateProcess(nil, GetCommandLine, nil, nil, False,
+      CREATE_NEW_PROCESS_GROUP + NORMAL_PRIORITY_CLASS, nil,
+      PChar(GetCurrentDir), AStartInfo, AProcInfo);
+  end;
+  TerminateProcess(GetCurrentProcess, 1);
 end;
 
 end.

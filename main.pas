@@ -5,16 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ShellApi, Buttons, Menus, ExtCtrls, AppEvnts,
-  ImgList, HotKeyManager, CoolTrayIcon, DB, DBClient, jpeg,
-  JvComponentBase, JvgLanguageLoader, Provider;
-
-type 
-  TWmMoving = record
-    uMsg  : UINT;
-    wParam: WPARAM;
-    lParam: ^TRect;
-    Result: HRESULT;
-  end;
+  HotKeyManager, ImgList, CoolTrayIcon, jpeg;
 
 const
   IC_CLICK = WM_APP + 201;
@@ -36,15 +27,12 @@ type
     imgList: TImageList;
     hkm: THotKeyManager;
     appEvents: TApplicationEvents;
-    btnChangeActivity: TSpeedButton;
     tmrFade: TTimer;
     procedure btnOptionsClick(Sender: TObject);
     procedure tmrCounterTimer(Sender: TObject);
     procedure pmNoonClick(Sender: TObject);
     procedure pmShowHideClick(Sender: TObject);
-    procedure pmExitClick(Sender: TObject);
     procedure btnMinimizeClick(Sender: TObject);
-    procedure btnCloseClick(Sender: TObject);
     procedure btnInfoClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure hkmHotKeyPressed(HotKey: Cardinal; Index: Word);
@@ -60,17 +48,17 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormHide(Sender: TObject);
     procedure _MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure _Close(Sender: TObject);
   protected
   private
     { Private declarations }
     procedure Init;
     procedure FadeForm(Action:String);
-  public
-    { Public declarations }
-    procedure WmMoving(var Message: TWmMoving); message WM_MOVING;
     procedure getOptions;
     procedure StartLog;
-    procedure Noon;
+    procedure Noon(IsNoon:Boolean);
+  public
+    { Public declarations }
   end;
 
 var
@@ -87,7 +75,7 @@ var
   s,m,h,wh:Double; //seconds, minutes, hours, workinghours
 
   // setting variables
-  LogFile:String;
+  LogFilePath:String;
   Wt:Integer;
   WtOver:Boolean; // check if the set worktime is allready over
   NotifyWt:Boolean;
@@ -98,13 +86,6 @@ var
   FadeSpeed:Integer;
   StartMinimized:Boolean;
   AutoRun:Boolean;
-
-//  DBConn:TMYSQL;
-  DBHost:String;
-  DBPort:Integer;
-  DBUser:String;
-  DBPass:String;
-  DBDatabase:String;
 
   // various variables
   FadeAction:String; // show, hide or close with fade effect
@@ -124,11 +105,6 @@ begin
   NoonTick := 0;
   StartedTick := GetTickCount; // Seconds since computer running
   WtOver := False;
-{  DBConn.host := pAnsiChar(DBHost);
-  DBConn.port := DBPort;
-  DBConn.user := pAnsiChar(DBUser);
-  DBConn.passwd := pAnsiChar(DBPass);
-  DBConn.db := pAnsiChar(DBDatabase);}
 end;
 
 procedure TWork_Time._MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -149,27 +125,6 @@ begin
     Application.ProcessMessages; {allowing access to other controls, etc.}
   until ((GetTickCount-FirstTickCount) >= msecs);
 end;
-
-procedure TWork_Time.WmMoving(var Message: TWmMoving);
-var
-  WorkArea:TRect;
-begin
-  inherited;
-  if SystemParametersInfo(SPI_GETWORKAREA, 0, @WorkArea, 0) then
-  with Message do
-  begin
-    if lParam.Right > WorkArea.Right then
-      OffsetRect(lParam^, WorkArea.Right - lParam.Right, 0);
-    if lParam.Left < WorkArea.Left then
-      OffsetRect(lParam^, WorkArea.Left - lParam.Left, 0);
-    if lParam.Bottom > WorkArea.Bottom then
-      OffsetRect(lParam^, 0, WorkArea.Bottom - lParam.Bottom);
-    if lParam.Top < WorkArea.Top then
-      OffsetRect(lParam^, 0, WorkArea.Top - lParam.Top);
-    Result := HRESULT(True);
-  end;
-end;
-
 
 procedure TWork_Time.FadeForm(Action:String);
 begin
@@ -203,49 +158,39 @@ begin
   if FadeSpeed = defFadeSpeed then reg.setInteger(defRegKey,'FadeSpeed',defFadeSpeed);
   StartMinimized := reg.getBoolean(defRegKey,'StartMinimized',defStartMinimized);
   if StartMinimized = defStartMinimized then reg.setBoolean(defRegKey,'StartMinimized',defStartMinimized);
+  LogFilePath := reg.getString(defRegKey,'LogFilePath',defLogFilePath);
+  if LogFilePath = defLogFilePath then reg.setString(defRegKey,'LogFilePath',defLogFilePath);
   AutoRun := reg.getString(runRegKey,'WorkTime','') <> '';
-
-// Database
-  DBHost := reg.getString(defRegKey,'DBHost',defDBHost);
-  if DBHost = defDBHost then reg.setString(defRegKey,'DBHost',defDBHost);
-  DBUser := reg.getString(defRegKey,'DBUser',defDBUser);
-  if DBUser = defDBUser then reg.setString(defRegKey,'DBUser',defDBUser);
-  DBPass := reg.getString(defRegKey,'DBPass','');
-  if DBPass = defDBPass then reg.setString(defRegKey,'DBPass',defDBPass);
-  DBDatabase := reg.getString(defRegKey,'DBDatabase','');
-  if DBDatabase = defDBDatabase then reg.setString(defRegKey,'DBDatabase',defDBDatabase);
-  DBPort := reg.getInteger(defRegKey,'DBPort',defDBPort);
-  if DBPort = defDBPort then reg.setInteger(defRegKey,'DBPort',defDBPort);
 end;
 
 procedure TWork_Time.StartLog;
 begin
 // FILE
-  if FileExists(LogFile) then
+  if FileExists(LogFilePath) then
   begin
-    AssignFile(Log, LogFile);
+    AssignFile(Log, LogFilePath);
     Append(Log);
   end
   else
   begin
-{    LogFile := defLogFile;
-    AssignFile(Log, LogFile);
+    LogFilePath := defLogFilePath;
+    AssignFile(Log, LogFilePath);
     Rewrite(Log);
-    reg.setString(defRegKey,'LogFile',LogFile);}
   end;
-{  WriteLn(Log, '');
+  WriteLn(Log, '');
+
   WriteLn(Log, '__ ' + FormatDateTime('dd.mm.yyyy', Now) + ' ________________');
   WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Work Started');
-  CloseFile(Log);}
+  CloseFile(Log);
 end;
 
-procedure TWork_Time.Noon;
+procedure TWork_Time.Noon(IsNoon:Boolean);
 begin
-{  Append(Log);
-  if pmNoon.Checked then
+  Append(Log);
+  if IsNoon then
   begin
     NoonTick := GetTickCount - NoonTick;
-    tmrCounter.Enabled := false;
+    tmrCounter.Enabled := False;
     TrayIcon.IconIndex := 1;
     WriteLn(log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Noon Started');
   end
@@ -256,7 +201,7 @@ begin
     TrayIcon.IconIndex := 0;
     WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Noon Finished');
   end;
-  CloseFile(Log);}
+  CloseFile(Log);
 end;
 
 {*******************************************************************************
@@ -314,14 +259,8 @@ begin
     tbFadeSpeed.Enabled := Fade;
     tbFadeSpeed.Position := FadeSpeed;
     cbStartMinimized.Checked := StartMinimized;
+    editLogFilePath.Text := LogFilePath;
     cbAutoRun.Checked := AutoRun;
-
-    //Database
-    editDBHost.Text := DBHost;
-    editDBPort.Text := IntToStr(DBPort);
-    editDBUser.Text := DBUser;
-    editDBPass.Text := DBPass;
-    editDBDatabase.Text := DBDatabase;
 
     if Frm_Options.ShowModal = mrOK then
     begin
@@ -349,20 +288,10 @@ begin
       reg.setInteger(defRegKey,'FadeSpeed',FadeSpeed);
       StartMinimized := cbStartMinimized.Checked;
       reg.setBoolean(defRegKey,'StartMinimized',StartMinimized);
+      LogFilePath := editLogFilePath.Text;
+      reg.setString(defRegKey,'LogFilePath',LogFilePath);
       AutoRun := cbAutoRun.Checked;
       if AutoRun then reg.setString(runRegKey,progName,ParamStr(0)) else reg.delValue(runRegKey,progName);
-
-      //Database
-      DBHost := editDBHost.Text;
-      reg.setString(defRegKey,'DBHost',DBHost);
-      DBPort := StrToInt(editDBPort.Text);
-      reg.setInteger(defRegKey,'DBPort',DBPort);
-      DBUser := editDBUser.Text;
-      reg.setString(defRegKey,'DBUser',DBUser);
-      DBPass := editDBPass.Text;
-      reg.setString(defRegKey,'DBPass',DBPass);
-      DBDatabase := editDBDatabase.Text;
-      reg.setString(defRegKey,'DBDatabase',DBDatabase);
     end;
     hkm.AddHotKey(HotKeyNoon);
   end;
@@ -370,15 +299,6 @@ end;
 
 procedure TWork_Time.tmrCounterTimer(Sender: TObject);
 begin
-  if ((GetTickCount - StartedTick - NoonTick) > (1000 * 60 * 60 * 24)) then
-  begin
-    tmrCounter.Enabled := False;
-    hkm.RemoveHotKey(HotKeyNoon);
-    pmNoon.Enabled := False;
-    ShowMessage('Max. Working Time in 1 day! Restart Program!');
-    Exit;
-  end;
-
   s :=  ((GetTickCount - StartedTick - NoonTick) div 1000) mod 60;
   m :=  ((GetTickCount - StartedTick - NoonTick) div (1000*60)) mod 60;
   h :=  ((GetTickCount - StartedTick - NoonTick) div (1000*60*60));
@@ -409,7 +329,7 @@ end;
 
 procedure TWork_Time.pmNoonClick(Sender: TObject);
 begin
-  Noon;
+  Noon(pmNoon.Checked);
 end;
 
 procedure TWork_Time.pmShowHideClick(Sender: TObject);
@@ -424,13 +344,9 @@ begin
     if Visible then Hide else Show;
 end;
 
-procedure TWork_Time.pmExitClick(Sender: TObject);
+procedure TWork_Time._Close(Sender: TObject);
 begin
-  if Fade then FadeForm('close') else Close;
-end;
-
-procedure TWork_Time.btnCloseClick(Sender: TObject);
-begin
+  tmrCounter.Enabled := False;
   if Fade then FadeForm('close') else Close;
 end;
 
@@ -447,7 +363,7 @@ end;
 procedure TWork_Time.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
-{  AssignFile(Log, LogFile);
+  AssignFile(Log, LogFilePath);
   Append(Log);
   WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Work Finished');
   WriteLn(Log, '------------------------------');
@@ -455,13 +371,14 @@ begin
   WriteLn(Log, 'Total working minutes : ' + FloatToStr(m));
   WriteLn(Log, 'Total working seconds : ' + FloatToStr(s));
   WriteLn(Log, '------------------------------');
-  CloseFile(Log);}
+  CloseFile(Log);
   hkm.ClearHotKeys;
 end;
 
 procedure TWork_Time.hkmHotKeyPressed(HotKey: Cardinal; Index: Word);
 begin
-  if HotKey = HotKeyNoon then Noon;
+  pmNoon.Checked := not pmNoon.Checked;
+  if HotKey = HotKeyNoon then Noon(pmNoon.Checked);
 end;
 
 procedure TWork_Time.trayIconClick(Sender: TObject);

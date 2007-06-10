@@ -5,7 +5,7 @@ object Frm_Options: TFrm_Options
   BorderStyle = bsNone
   BorderWidth = 1
   Caption = 'Options'
-  ClientHeight = 412
+  ClientHeight = 370
   ClientWidth = 266
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,7 +18,6 @@ object Frm_Options: TFrm_Options
   Position = poScreenCenter
   Scaled = False
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -86,7 +85,7 @@ object Frm_Options: TFrm_Options
   end
   object pnlButtons: TPanel
     Left = 0
-    Top = 388
+    Top = 346
     Width = 266
     Height = 24
     Align = alBottom
@@ -275,8 +274,8 @@ object Frm_Options: TFrm_Options
     Left = 0
     Top = 30
     Width = 266
-    Height = 358
-    ActivePage = npProjects
+    Height = 316
+    ActivePage = npVarious
     Align = alClient
     AutoHeaders = True
     Background.Stretch = False
@@ -304,151 +303,23 @@ object Frm_Options: TFrm_Options
     StyleManager = npStyleManager
     ParentStyleManager = False
     SplitterHeight = 0
-    MaximizedCount = 4
+    MaximizedCount = 2
+    NavPanelFont.Charset = DEFAULT_CHARSET
+    NavPanelFont.Color = clWindowText
+    NavPanelFont.Height = -11
+    NavPanelFont.Name = 'Verdana'
+    NavPanelFont.Style = [fsBold]
+    NavPanelHotTrackFont.Charset = DEFAULT_CHARSET
+    NavPanelHotTrackFont.Color = clWindow
+    NavPanelHotTrackFont.Height = -11
+    NavPanelHotTrackFont.Name = 'Verdana'
+    NavPanelHotTrackFont.Style = [fsBold]
     Resizable = False
-    object npDatabase: TJvNavPanelPage
-      Left = 0
-      Top = 0
-      Width = 264
-      Height = 256
-      Background.Stretch = False
-      Background.Proportional = False
-      Background.Center = False
-      Background.Tile = False
-      Background.Transparent = False
-      Color = clGray
-      Caption = 'Database'
-      object btnDefaults: TSpeedButton
-        Left = 5
-        Top = 200
-        Width = 60
-        Height = 20
-        Caption = 'Defaults'
-        Flat = True
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWhite
-        Font.Height = -11
-        Font.Name = 'MS Sans Serif'
-        Font.Style = [fsBold]
-        ParentFont = False
-        OnClick = btnDefaultsClick
-      end
-      object btnDBTestConnection: TSpeedButton
-        Left = 155
-        Top = 200
-        Width = 100
-        Height = 20
-        Caption = 'Test Connection'
-        Flat = True
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWhite
-        Font.Height = -11
-        Font.Name = 'MS Sans Serif'
-        Font.Style = [fsBold]
-        ParentFont = False
-        OnClick = btnDBTestConnectionClick
-      end
-      object editDBHost: TLabeledEdit
-        Left = 5
-        Top = 50
-        Width = 166
-        Height = 21
-        EditLabel.Width = 22
-        EditLabel.Height = 13
-        EditLabel.Caption = 'Host'
-        EditLabel.Color = clGray
-        EditLabel.Font.Charset = DEFAULT_CHARSET
-        EditLabel.Font.Color = clWhite
-        EditLabel.Font.Height = -11
-        EditLabel.Font.Name = 'MS Sans Serif'
-        EditLabel.Font.Style = []
-        EditLabel.ParentColor = False
-        EditLabel.ParentFont = False
-        TabOrder = 0
-        OnChange = InfosComplete
-      end
-      object editDBUser: TLabeledEdit
-        Left = 5
-        Top = 90
-        Width = 250
-        Height = 21
-        EditLabel.Width = 48
-        EditLabel.Height = 13
-        EditLabel.Caption = 'Username'
-        EditLabel.Color = clGray
-        EditLabel.Font.Charset = DEFAULT_CHARSET
-        EditLabel.Font.Color = clWhite
-        EditLabel.Font.Height = -11
-        EditLabel.Font.Name = 'MS Sans Serif'
-        EditLabel.Font.Style = []
-        EditLabel.ParentColor = False
-        EditLabel.ParentFont = False
-        TabOrder = 2
-        OnChange = InfosComplete
-      end
-      object editDBPass: TLabeledEdit
-        Left = 5
-        Top = 130
-        Width = 250
-        Height = 21
-        EditLabel.Width = 46
-        EditLabel.Height = 13
-        EditLabel.Caption = 'Password'
-        EditLabel.Color = clGray
-        EditLabel.Font.Charset = DEFAULT_CHARSET
-        EditLabel.Font.Color = clWhite
-        EditLabel.Font.Height = -11
-        EditLabel.Font.Name = 'MS Sans Serif'
-        EditLabel.Font.Style = []
-        EditLabel.ParentColor = False
-        EditLabel.ParentFont = False
-        TabOrder = 3
-      end
-      object editDBDatabase: TLabeledEdit
-        Left = 5
-        Top = 170
-        Width = 250
-        Height = 21
-        EditLabel.Width = 46
-        EditLabel.Height = 13
-        EditLabel.Caption = 'Database'
-        EditLabel.Color = clGray
-        EditLabel.Font.Charset = DEFAULT_CHARSET
-        EditLabel.Font.Color = clWhite
-        EditLabel.Font.Height = -11
-        EditLabel.Font.Name = 'MS Sans Serif'
-        EditLabel.Font.Style = []
-        EditLabel.ParentColor = False
-        EditLabel.ParentFont = False
-        ReadOnly = True
-        TabOrder = 4
-        OnChange = InfosComplete
-      end
-      object editDBPort: TLabeledEdit
-        Left = 175
-        Top = 50
-        Width = 81
-        Height = 21
-        EditLabel.Width = 19
-        EditLabel.Height = 13
-        EditLabel.Caption = 'Port'
-        EditLabel.Color = clGray
-        EditLabel.Font.Charset = DEFAULT_CHARSET
-        EditLabel.Font.Color = clWhite
-        EditLabel.Font.Height = -11
-        EditLabel.Font.Name = 'MS Sans Serif'
-        EditLabel.Font.Style = []
-        EditLabel.ParentColor = False
-        EditLabel.ParentFont = False
-        TabOrder = 1
-        OnChange = InfosComplete
-      end
-    end
     object npNotifications: TJvNavPanelPage
       Left = 0
       Top = 0
       Width = 264
-      Height = 256
+      Height = 254
       Background.Stretch = False
       Background.Proportional = False
       Background.Center = False
@@ -509,20 +380,6 @@ object Frm_Options: TFrm_Options
         Font.Style = []
         ParentFont = False
       end
-      object lblNotifyWtBtTitle: TLabel
-        Left = 5
-        Top = 115
-        Width = 90
-        Height = 13
-        AutoSize = False
-        Caption = 'NotificationTitle:'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWhite
-        Font.Height = -11
-        Font.Name = 'MS Sans Serif'
-        Font.Style = []
-        ParentFont = False
-      end
       object lblNotifyWtBtMessageCounter: TLabel
         Left = 220
         Top = 165
@@ -550,14 +407,6 @@ object Frm_Options: TFrm_Options
         Font.Name = 'MS Sans Serif'
         Font.Style = []
         ParentFont = False
-      end
-      object editNotifyWtBtTitle: TEdit
-        Left = 5
-        Top = 130
-        Width = 250
-        Height = 21
-        MaxLength = 100
-        TabOrder = 4
       end
       object seWtSeconds: TSpinEdit
         Left = 105
@@ -595,7 +444,7 @@ object Frm_Options: TFrm_Options
         Width = 250
         Height = 65
         MaxLength = 250
-        TabOrder = 5
+        TabOrder = 4
         OnChange = memoNotifyWtBtMessageChange
       end
       object cbNotifyWt: TCheckBox
@@ -618,12 +467,31 @@ object Frm_Options: TFrm_Options
         TabOrder = 0
         OnClick = cbNotifyWtClick
       end
+      object editNotifyWtBtTitle: TLabeledEdit
+        Left = 5
+        Top = 136
+        Width = 250
+        Height = 21
+        EditLabel.Width = 79
+        EditLabel.Height = 13
+        EditLabel.Caption = 'Notification Title:'
+        EditLabel.Color = clGray
+        EditLabel.Font.Charset = DEFAULT_CHARSET
+        EditLabel.Font.Color = clWhite
+        EditLabel.Font.Height = -11
+        EditLabel.Font.Name = 'MS Sans Serif'
+        EditLabel.Font.Style = []
+        EditLabel.ParentColor = False
+        EditLabel.ParentFont = False
+        EditLabel.Transparent = True
+        TabOrder = 6
+      end
     end
     object npVarious: TJvNavPanelPage
       Left = 0
       Top = 0
       Width = 264
-      Height = 256
+      Height = 254
       Background.Stretch = False
       Background.Proportional = False
       Background.Center = False
@@ -683,6 +551,20 @@ object Frm_Options: TFrm_Options
         Font.Height = -11
         Font.Name = 'MS Sans Serif'
         Font.Style = []
+        ParentFont = False
+      end
+      object btnBrowse: TSpeedButton
+        Left = 237
+        Top = 206
+        Width = 20
+        Height = 20
+        Caption = '...'
+        Flat = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -11
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
         ParentFont = False
       end
       object cbAutoRun: TCheckBox
@@ -749,218 +631,24 @@ object Frm_Options: TFrm_Options
         TabOrder = 0
         OnClick = cbFadeClick
       end
-    end
-    object npProjects: TJvNavPanelPage
-      Left = 0
-      Top = 0
-      Width = 264
-      Height = 256
-      Background.Stretch = False
-      Background.Proportional = False
-      Background.Center = False
-      Background.Tile = False
-      Background.Transparent = True
-      Color = clGray
-      Caption = 'Projects'
-      object btnAdd: TSpeedButton
-        Left = 215
-        Top = 50
-        Width = 20
-        Height = 20
-        Enabled = False
-        Flat = True
-        Glyph.Data = {
-          36080000424D3608000000000000360000002800000020000000100000000100
-          20000000000000080000120B0000120B00000000000000000000FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF0000840800088C1800088C1800088410000884
-          100000730000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00424242004A4A4A004A4A4A00464646004646
-          460039393900FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF000084080052DE7B0039CE6B0039CE630031C6
-          5A00007B0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00424242009898980083838300838383007B7B
-          7B003D3D3D00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00008408005AE7840039D66B0039D66B0031C6
-          5A00007B0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF0042424200A0A0A00087878700878787007B7B
-          7B003D3D3D00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00088C100063E78C0042D6730042D6730039CE
-          6300007B0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF004A4A4A00A5A5A5008C8C8C008C8C8C008383
-          83003D3D3D00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF000894
-          100008941000088C1000088C1000088C100052E7840042D6730042D6730039CE
-          63000084080000840800007B0000007B0000007B0000FF00FF00FF00FF004E4E
-          4E004E4E4E004A4A4A004A4A4A004A4A4A009C9C9C008C8C8C008C8C8C008383
-          830042424200424242003D3D3D003D3D3D003D3D3D00FF00FF00FF00FF0021A5
-          290063E784004ADE7B004ADE7B004ADE73004ADE7B0042DE730042DE730042D6
-          730039CE630039CE630039CE630031C65A0008841000FF00FF00FF00FF006363
-          6300A5A5A5009494940094949400949494009494940090909000909090008C8C
-          8C008383830083838300838383007B7B7B0046464600FF00FF00FF00FF0021AD
-          310073F79C0063E78C005AE7840052E7840052E784004ADE7B004ADE7B0042DE
-          730042D6730042D6730039D66B0039CE630008841000FF00FF00FF00FF006767
-          6700B5B5B500A5A5A500A0A0A0009C9C9C009C9C9C0094949400949494009090
-          90008C8C8C008C8C8C00878787008383830046464600FF00FF00FF00FF0021AD
-          31007BF79C006BEF940063EF8C0063E78C005AE7840052E784004ADE7B0042DE
-          730042D6730042D6730039D66B0039CE6B00088C1800FF00FF00FF00FF006767
-          6700B9B9B900ADADAD00A9A9A900A5A5A500A0A0A0009C9C9C00949494009090
-          90008C8C8C008C8C8C0087878700838383004A4A4A00FF00FF00FF00FF0021AD
-          310094F7AD008CF7A5008CF7A5008CF7A5007BF79C005AE7840052E784004ADE
-          7B005AE7840063E78C005AE7840052DE7B00088C1800FF00FF00FF00FF006767
-          6700C5C5C500C1C1C100C1C1C100C1C1C100B9B9B900A0A0A0009C9C9C009494
-          9400A0A0A000A5A5A500A0A0A000989898004A4A4A00FF00FF00FF00FF00089C
-          1000089C1000089C100008941000089410008CF7A50063E78C0052E7840042D6
-          7300088C1000088C1000088410000084080000840800FF00FF00FF00FF005252
-          520052525200525252004E4E4E004E4E4E00C1C1C100A5A5A5009C9C9C008C8C
-          8C004A4A4A004A4A4A00464646004242420042424200FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00089410008CF7A50063EF8C005AE7840042D6
-          7300088C1000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF004E4E4E00C1C1C100A9A9A900A0A0A0008C8C
-          8C004A4A4A00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00089C10008CF7A5006BEF940063E78C0042D6
-          7300088C1000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF0052525200C1C1C100ADADAD00A5A5A5008C8C
-          8C004A4A4A00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00089C100094F7AD007BF79C0073F79C005ADE
-          7B00088C1000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF0052525200C5C5C500B9B9B900B5B5B5009C9C
-          9C004A4A4A00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00089C100021AD310021AD310021AD310021A5
-          290008941000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00525252006767670067676700676767006363
-          63004E4E4E00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00}
-        NumGlyphs = 2
-        OnClick = btnAddClick
-      end
-      object lblProjectList: TLabel
+      object editLogFilePath: TLabeledEdit
         Left = 5
-        Top = 80
-        Width = 73
-        Height = 13
-        AutoSize = False
-        Caption = 'Project List'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWhite
-        Font.Height = -11
-        Font.Name = 'MS Sans Serif'
-        Font.Style = []
-        ParentFont = False
-      end
-      object lblProject: TLabel
-        Left = 5
-        Top = 30
-        Width = 250
-        Height = 13
-        AutoSize = False
-        Caption = 'Project'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWhite
-        Font.Height = -11
-        Font.Name = 'MS Sans Serif'
-        Font.Style = []
-        ParentFont = False
-      end
-      object btnDelete: TSpeedButton
-        Left = 235
-        Top = 50
-        Width = 20
-        Height = 20
-        Enabled = False
-        Flat = True
-        Glyph.Data = {
-          36080000424D3608000000000000360000002800000020000000100000000100
-          20000000000000080000120B0000120B00000000000000000000FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF000005A7000008A8000006A5000002
-          9C00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF005353530054545400525252004E4E
-          4E00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF000012BF000020D8000023E0000020D9000019CC000011
-          BD00000BB0000003A000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF005F5F5F006C6C6C00707070006C6C6C00666666005E5E
-          5E005858580050505000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00001CD500002FFF00002AFB00002DF800002BF2000029EE00001F
-          E5000012CA00000DB5000005A300FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF006A6A6A007F7F7F007D7D7D007C7C7C0079797900777777007272
-          7200656565005A5A5A0051515100FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF000722D2000035FF0097A9E8006888F4000034FF00002DFF000033FA0095B1
-          FD004570FB000019D400000DB6000003A000FF00FF00FF00FF00FF00FF00FF00
-          FF006C6C6C007F7F7F00BFBFBF00AEAEAE007F7F7F007F7F7F007D7D7D00C9C9
-          C900A0A0A0006A6A6A005B5B5B0050505000FF00FF00FF00FF00FF00FF00FF00
-          FF00254EF8000034FF00CACDDC00F5EFDE00B1C0EF00063DFF00B1C4FA00FFFF
-          FB00FFFFFF006187FD000012CA00000CB200FF00FF00FF00FF00FF00FF00FF00
-          FF008E8E8E007F7F7F00D3D3D300E9E9E900D0D0D00082828200D5D5D500FDFD
-          FD00FFFFFF00AFAFAF006565650059595900FF00FF00FF00FF00FF00FF000724
-          D7003D6AFF00083CFE0097A3E200F4F1E100F6F3EA00E4E8F300FFFFF800FFFF
-          FF00F3F7FF00446DFD000022E7000012BE000005A200FF00FF00FF00FF006F6F
-          6F009E9E9E0083838300BCBCBC00EAEAEA00F0F0F000EBEBEB00FBFBFB00FFFF
-          FF00F9F9F900A0A0A000737373005F5F5F0051515100FF00FF00FF00FF001636
-          E1004B76FF002255FF000D41FE005C7AF000EFEDEB00F6F6F300FFFFFB00CDDA
-          FE00174AFF00002AFC00002CF3000019CB000009AC00FF00FF00FF00FF007B7B
-          7B00A5A5A5009090900085858500A6A6A600EDEDED00F4F4F400FDFDFD00E5E5
-          E5008B8B8B007E7E7E00797979006565650056565600FF00FF00FF00FF001739
-          E5006489FF002E5FFF003364FF000639FC00DADCED00FBF9F300FFFFFB00ADC0
-          FE000033FF000236FF000030FA000020DA00000BAF00FF00FF00FF00FF007E7E
-          7E00B1B1B100969696009999990081818100E3E3E300F7F7F700FDFDFD00D5D5
-          D5007F7F7F00808080007D7D7D006D6D6D0057575700FF00FF00FF00FF00082B
-          E30083A2FF003D6CFF003C6CFF00526DE900FFFBE900B2BFF300D4DAF900FFFF
-          FF006D8FFF000033FF000032FF000023E200000AB000FF00FF00FF00FF007575
-          7500C1C1C1009E9E9E009D9D9D009D9D9D00F4F4F400D2D2D200E6E6E600FFFF
-          FF00B6B6B6007F7F7F007F7F7F007171710058585800FF00FF00FF00FF00FF00
-          FF00688AFA007096FF002958F700BABEDE00F5F3E7001543F7000E41FD00E7EC
-          FB00FFFFFF002958FE000035FF000021DA00FF00FF00FF00FF00FF00FF00FF00
-          FF00B1B1B100B7B7B70090909000CCCCCC00EEEEEE008686860085858500F1F1
-          F100FFFFFF00939393007F7F7F006D6D6D00FF00FF00FF00FF00FF00FF00FF00
-          FF00163EEE0097B6FF004C75F9005B6CD800546BE1003365FF002D5FFF001745
-          FC00C7D1FA004C73FF000135FF000015C600FF00FF00FF00FF00FF00FF00FF00
-          FF0082828200CBCBCB00A2A2A200999999009A9A9A0099999900969696008989
-          8900E0E0E000A5A5A5008080800063636300FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF002B50F30096B3FF006F95FF003966FA00396AFF002F60FF002153
-          FE00083CFF000C40FF000120DB00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF008F8F8F00CACACA00B7B7B700999999009C9C9C00979797008F8F
-          8F0083838300858585006E6E6E00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00143BF1006688FA0088A9FF006A8FFF004F7AFF003E6D
-          FF00204CF6000522D900FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF0082828200B0B0B000C3C3C300B4B4B400A7A7A7009E9E
-          9E008B8B8B006F6F6F00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF000128E7001438EA001235E6000021
-          DC00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF00747474007F7F7F007C7C7C006E6E
-          6E00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
-          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00}
-        NumGlyphs = 2
-        OnClick = btnDeleteClick
-      end
-      object editProject: TEdit
-        Left = 5
-        Top = 50
-        Width = 206
+        Top = 206
+        Width = 228
         Height = 21
-        TabOrder = 0
-        OnChange = editProjectChange
-        OnKeyPress = editProjectKeyPress
-      end
-      object lbProject: TListBox
-        Left = 5
-        Top = 100
-        Width = 250
-        Height = 145
-        ItemHeight = 13
-        MultiSelect = True
-        TabOrder = 2
+        EditLabel.Width = 56
+        EditLabel.Height = 13
+        EditLabel.Caption = 'Logfile Path'
+        EditLabel.Color = clGray
+        EditLabel.Font.Charset = DEFAULT_CHARSET
+        EditLabel.Font.Color = clWhite
+        EditLabel.Font.Height = -11
+        EditLabel.Font.Name = 'MS Sans Serif'
+        EditLabel.Font.Style = []
+        EditLabel.ParentColor = False
+        EditLabel.ParentFont = False
+        EditLabel.Transparent = True
+        TabOrder = 6
       end
     end
   end

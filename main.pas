@@ -5,29 +5,30 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ShellApi, Buttons, Menus, ExtCtrls, AppEvnts,
-  HotKeyManager, ImgList, CoolTrayIcon, jpeg;
+  HotKeyManager, ImgList, CoolTrayIcon, jpeg, JvExControls, JvButton,
+  JvTransparentButton;
 
 const
   IC_CLICK = WM_APP + 201;
 
 type
-  TWork_Time = class(TForm)
+  TFrm_Main = class(TForm)
     lblTime: TLabel;
-    btnOptions: TSpeedButton;
     pmTNA: TPopupMenu;
     pmShowHide: TMenuItem;
     pmNoon: TMenuItem;
     tmrCounter: TTimer;
     pmExit: TMenuItem;
-    btnMinimize: TSpeedButton;
-    btnClose: TSpeedButton;
     imgBg: TImage;
-    btnInfo: TSpeedButton;
     trayIcon: TCoolTrayIcon;
     imgList: TImageList;
     hkm: THotKeyManager;
     appEvents: TApplicationEvents;
     tmrFade: TTimer;
+    btnClose: TJvTransparentButton;
+    btnInfo: TJvTransparentButton;
+    btnMinimize: TJvTransparentButton;
+    btnOptions: TJvTransparentButton;
     procedure btnOptionsClick(Sender: TObject);
     procedure tmrCounterTimer(Sender: TObject);
     procedure pmNoonClick(Sender: TObject);
@@ -41,7 +42,6 @@ type
     procedure appEventsException(Sender: TObject; E: Exception);
     procedure trayIconBalloonHintTimeout(Sender: TObject);
     procedure trayIconBalloonHintClick(Sender: TObject);
-    procedure btnChangeActivityClick(Sender: TObject);
     procedure tmrFadeTimer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure trayIconStartup(Sender: TObject; var ShowMainForm: Boolean);
@@ -62,12 +62,12 @@ type
   end;
 
 var
-  Work_Time: TWork_Time;
+  Frm_Main: TFrm_Main;
   Log : TextFile;
 
 implementation
 
-uses globalDefinitions, reg, options, info, activity, projects,mysql;
+uses globalDefinitions, reg, options, info;
 
 var
   mHandle:THandle;
@@ -100,14 +100,14 @@ var
 *******************************************************************************}
 
 // initialize all variables needed at startup
-procedure TWork_Time.Init;
+procedure TFrm_Main.Init;
 begin
   NoonTick := 0;
   StartedTick := GetTickCount; // Seconds since computer running
   WtOver := False;
 end;
 
-procedure TWork_Time._MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+procedure TFrm_Main._MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 begin
   if (ssLeft in Shift) then
   begin
@@ -126,7 +126,7 @@ begin
   until ((GetTickCount-FirstTickCount) >= msecs);
 end;
 
-procedure TWork_Time.FadeForm(Action:String);
+procedure TFrm_Main.FadeForm(Action:String);
 begin
   FadeAction := LowerCase(Action);
   if FadeAction = 'auto' then
@@ -140,7 +140,7 @@ begin
   tmrFade.Enabled := True;
 end;
 
-procedure TWork_Time.getOptions;
+procedure TFrm_Main.getOptions;
 begin
   Wt := reg.getInteger(defRegKey,'Wt',defWt);
   if Wt = defWt then reg.setInteger(defRegKey,'Wt',defWt);
@@ -163,7 +163,7 @@ begin
   AutoRun := reg.getString(runRegKey,'WorkTime','') <> '';
 end;
 
-procedure TWork_Time.StartLog;
+procedure TFrm_Main.StartLog;
 begin
 // FILE
   if FileExists(LogFilePath) then
@@ -184,7 +184,7 @@ begin
   CloseFile(Log);
 end;
 
-procedure TWork_Time.Noon(IsNoon:Boolean);
+procedure TFrm_Main.Noon(IsNoon:Boolean);
 begin
   Append(Log);
   if IsNoon then
@@ -220,13 +220,13 @@ end;
   CUSTOM PROCEDURES AND FUNCTIONS                                            end
 *******************************************************************************}
 
-procedure TWork_Time.FormCreate(Sender: TObject);
+procedure TFrm_Main.FormCreate(Sender: TObject);
 begin
   Top := Screen.WorkAreaHeight - Height;
   Left := Screen.WorkAreaWidth - Width;
 end;
 
-procedure TWork_Time.FormActivate(Sender: TObject);
+procedure TFrm_Main.FormActivate(Sender: TObject);
 begin
   SetWindowLong(Application.Handle,GWL_EXSTYLE,WS_EX_TOOLWINDOW);
   getOptions;
@@ -238,7 +238,7 @@ begin
   else AlphaBlendValue := 0;
 end;
 
-procedure TWork_Time.btnOptionsClick(Sender: TObject);
+procedure TFrm_Main.btnOptionsClick(Sender: TObject);
 begin
   hkm.RemoveHotKey(HotKeyNoon);
   with Frm_Options do
@@ -297,7 +297,7 @@ begin
   end;
 end;
 
-procedure TWork_Time.tmrCounterTimer(Sender: TObject);
+procedure TFrm_Main.tmrCounterTimer(Sender: TObject);
 begin
   s :=  ((GetTickCount - StartedTick - NoonTick) div 1000) mod 60;
   m :=  ((GetTickCount - StartedTick - NoonTick) div (1000*60)) mod 60;
@@ -327,30 +327,30 @@ begin
   end;
 end;
 
-procedure TWork_Time.pmNoonClick(Sender: TObject);
+procedure TFrm_Main.pmNoonClick(Sender: TObject);
 begin
   Noon(pmNoon.Checked);
 end;
 
-procedure TWork_Time.pmShowHideClick(Sender: TObject);
+procedure TFrm_Main.pmShowHideClick(Sender: TObject);
 begin
   if Fade then FadeForm('auto') else
   if Visible then Hide else Show;
 end;
 
-procedure TWork_Time.btnMinimizeClick(Sender: TObject);
+procedure TFrm_Main.btnMinimizeClick(Sender: TObject);
 begin
   if Fade then FadeForm('auto') else
     if Visible then Hide else Show;
 end;
 
-procedure TWork_Time._Close(Sender: TObject);
+procedure TFrm_Main._Close(Sender: TObject);
 begin
   tmrCounter.Enabled := False;
   if Fade then FadeForm('close') else Close;
 end;
 
-procedure TWork_Time.btnInfoClick(Sender: TObject);
+procedure TFrm_Main.btnInfoClick(Sender: TObject);
 begin
   Application.CreateForm(TFrm_info, Frm_info);
   try
@@ -360,7 +360,7 @@ begin
   end;
 end;
 
-procedure TWork_Time.FormCloseQuery(Sender: TObject;
+procedure TFrm_Main.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
   AssignFile(Log, LogFilePath);
@@ -375,41 +375,36 @@ begin
   hkm.ClearHotKeys;
 end;
 
-procedure TWork_Time.hkmHotKeyPressed(HotKey: Cardinal; Index: Word);
+procedure TFrm_Main.hkmHotKeyPressed(HotKey: Cardinal; Index: Word);
 begin
   pmNoon.Checked := not pmNoon.Checked;
   if HotKey = HotKeyNoon then Noon(pmNoon.Checked);
 end;
 
-procedure TWork_Time.trayIconClick(Sender: TObject);
+procedure TFrm_Main.trayIconClick(Sender: TObject);
 begin
   if Fade then
     FadeForm('auto')
   else if Visible then Hide else Show;
 end;
 
-procedure TWork_Time.appEventsException(Sender: TObject; E: Exception);
+procedure TFrm_Main.appEventsException(Sender: TObject; E: Exception);
 begin
   ShowMessage(e.Message);
 end;
 
-procedure TWork_Time.trayIconBalloonHintTimeout(Sender: TObject);
+procedure TFrm_Main.trayIconBalloonHintTimeout(Sender: TObject);
 begin
   trayIcon.IconIndex := 0;
 end;
 
-procedure TWork_Time.trayIconBalloonHintClick(Sender: TObject);
+procedure TFrm_Main.trayIconBalloonHintClick(Sender: TObject);
 begin
   trayIcon.IconIndex := 0;
   if not Visible then Show;
 end;
 
-procedure TWork_Time.btnChangeActivityClick(Sender: TObject);
-begin
-  Frm_Activity.ShowModal;
-end;
-
-procedure TWork_Time.tmrFadeTimer(Sender: TObject);
+procedure TFrm_Main.tmrFadeTimer(Sender: TObject);
 begin
   AlphaBlend := True;
   if FadeAction = 'show' then
@@ -447,27 +442,27 @@ begin
   end;
 end;
 
-procedure TWork_Time.trayIconStartup(Sender: TObject;
+procedure TFrm_Main.trayIconStartup(Sender: TObject;
   var ShowMainForm: Boolean);
 begin
   ShowMainForm := False;
-  Work_Time.FormActivate(Work_Time);
+  Frm_Main.FormActivate(Frm_Main);
 end;
 
-procedure TWork_Time.FormShow(Sender: TObject);
+procedure TFrm_Main.FormShow(Sender: TObject);
 begin
   pmShowHide.Caption := 'Hide';
 end;
 
-procedure TWork_Time.FormHide(Sender: TObject);
+procedure TFrm_Main.FormHide(Sender: TObject);
 begin
   pmShowHide.Caption := 'Show';
 end;
 
 Initialization
-  Work_Time.Init;
+  Frm_Main.Init;
 // Check if WorkTime.exe is already running
-  mHandle := CreateMutex(nil,True,'Work_Time');
+  mHandle := CreateMutex(nil,True,'Frm_Main');
   if GetLastError = ERROR_ALREADY_EXISTS then Halt; // Already running
 
 finalization

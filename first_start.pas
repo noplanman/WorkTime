@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, JvSpeedButton, JvExControls, JvComponent, JvGradient,
-  ExtCtrls, jpeg, Buttons, mysql;
+  ExtCtrls, jpeg, Buttons, JvButton, JvTransparentButton;
 
 type
   TFrm_First = class(TForm)
@@ -15,14 +15,14 @@ type
     gradButtons: TJvGradient;
     btnOk: TJvSpeedButton;
     btnCancel: TJvSpeedButton;
-    btnClose: TJvSpeedButton;
     imgTitle: TImage;
     lblTitle: TLabel;
-    btnBrowse: TSpeedButton;
     cbDesktopShortcut: TCheckBox;
+    btnClose: TJvTransparentButton;
+    btnBrowse: TJvTransparentButton;
     procedure FormCreate(Sender: TObject);
     procedure btnOkClick(Sender: TObject);
-    procedure CloseClick(Sender: TObject);
+    procedure _Close(Sender: TObject);
     procedure _MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure btnBrowseClick(Sender: TObject);
   private
@@ -35,8 +35,7 @@ var
   Frm_First: TFrm_First;
 
 implementation
-uses
-  functions, globalDefinitions, Math, reg;
+uses functions, globalDefinitions, Math, reg;
 
 {$R *.dfm}
 
@@ -102,7 +101,7 @@ begin
   end;
 end;
 
-procedure TFrm_First.CloseClick(Sender: TObject);
+procedure TFrm_First._Close(Sender: TObject);
 begin
   Close;
 end;

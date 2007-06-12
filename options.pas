@@ -4,10 +4,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Forms, Dialogs, StdCtrls, EButton, Spin,
-  ExtCtrls, Classes, Controls, ComCtrls, JvSpeedButton, JvExControls,
-  JvComponent, JvGradient, jpeg, Buttons, Graphics, JvComponentBase,
-  JvNavigationPane, DBCtrls, JvPageList, mysql, Grids, DBGrids,
-  JvExDBGrids, JvDBGrid, JvExExtCtrls, JvItemsPanel, JvDBDotNetControls;
+  ExtCtrls, Classes, Controls, JvButton, JvTransparentButton,
+  JvComponentBase, JvNavigationPane, ComCtrls, Buttons, JvPageList,
+  JvExControls, JvSpeedButton, JvGradient, jpeg;
 
 type
   TFrm_Options = class(TForm)
@@ -27,7 +26,6 @@ type
     btnCancel: TJvSpeedButton;
     lblHotKeyNoon: TLabel;
     hcNoon: THotKey;
-    btnClose: TJvSpeedButton;
     cbFade: TCheckBox;
     tbFadeSpeed: TTrackBar;
     lblFadeSpeed: TLabel;
@@ -45,14 +43,13 @@ type
     editNotifyWtBtTitle: TLabeledEdit;
     btnBrowse: TSpeedButton;
     editLogFilePath: TLabeledEdit;
+    btnClose: TJvTransparentButton;
     procedure cbNotifyWtClick(Sender: TObject);
     procedure memoNotifyWtBtMessageChange(Sender: TObject);
     procedure cbFadeClick(Sender: TObject);
-    procedure btnOkClick(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure _MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure btnDefaultsClick(Sender: TObject);
+    procedure _Close(Sender: TObject);
   private
     { Private declarations }
   public
@@ -61,9 +58,6 @@ type
 
 var
   Frm_Options: TFrm_Options;
-  MySQLConn : PMYSQL;
-  MySQLRes : PMYSQL_RES;
-  MySQLsql : String;
 
 implementation
 uses globalDefinitions, reg, Math, functions;
@@ -124,19 +118,9 @@ begin
   tbFadeSpeed.Enabled := cbFade.Checked;
 end;
 
-procedure TFrm_Options.btnOkClick(Sender: TObject);
+procedure TFrm_Options._Close(Sender: TObject);
 begin
-{  saveToFile(cdsProjects,dbProjects,dfBinary);}
-end;
-
-procedure TFrm_Options.FormShow(Sender: TObject);
-begin
-{  loadFromFile(cdsProjects,dbProjects);}
-end;
-
-procedure TFrm_Options.btnDefaultsClick(Sender: TObject);
-begin
-  editLogFilePath.Text := defLogFilePath;
+  Self.ModalResult := mrCancel;
 end;
 
 end.

@@ -4,7 +4,7 @@ uses
   Forms,
   SysUtils,
   Dialogs,
-  main in 'main.pas' {Work_Time},
+  main in 'main.pas' {Frm_Main},
   globalDefinitions in 'globalDefinitions.pas',
   reg in 'reg.pas',
   options in 'options.pas' {Frm_Options},
@@ -24,7 +24,7 @@ begin
   else
   begin
     Application.Initialize;
-    Application.CreateForm(TWork_Time, Work_Time);
+    Application.CreateForm(TFrm_Main, Frm_Main);
     Application.CreateForm(TFrm_Options, Frm_Options);
     Application.Run;
   end;

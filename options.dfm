@@ -5,9 +5,9 @@ object Frm_Options: TFrm_Options
   BorderStyle = bsNone
   BorderWidth = 1
   Caption = 'Options'
-  ClientHeight = 370
+  ClientHeight = 309
   ClientWidth = 266
-  Color = clBtnFace
+  Color = clSilver
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -15,7 +15,6 @@ object Frm_Options: TFrm_Options
   Font.Style = []
   FormStyle = fsStayOnTop
   OldCreateOrder = False
-  Position = poScreenCenter
   Scaled = False
   OnCreate = FormCreate
   PixelsPerInch = 96
@@ -89,7 +88,7 @@ object Frm_Options: TFrm_Options
   end
   object pnlButtons: TPanel
     Left = 0
-    Top = 346
+    Top = 285
     Width = 266
     Height = 24
     Align = alBottom
@@ -274,66 +273,25 @@ object Frm_Options: TFrm_Options
       OnClick = _Close
     end
   end
-  object npOptions: TJvNavigationPane
+  object pcOptions: TJvPageControl
     Left = 0
     Top = 24
     Width = 266
-    Height = 322
-    ActivePage = npNotifications
+    Height = 261
+    ActivePage = tsVarious
     Align = alClient
-    AutoHeaders = True
-    Background.Stretch = False
-    Background.Proportional = False
-    Background.Center = False
-    Background.Tile = False
-    Background.Transparent = False
-    ButtonHeight = 20
-    ButtonWidth = 20
-    Colors.ButtonColorFrom = clWhite
-    Colors.ButtonColorTo = clSilver
-    Colors.ButtonHotColorFrom = clSilver
-    Colors.ButtonHotColorTo = clGray
-    Colors.ButtonSelectedColorFrom = clGray
-    Colors.ButtonSelectedColorTo = clSilver
-    Colors.SplitterColorFrom = clSilver
-    Colors.SplitterColorTo = clGray
-    Colors.DividerColorFrom = clSilver
-    Colors.DividerColorTo = clGray
-    Colors.HeaderColorFrom = clGray
-    Colors.HeaderColorTo = clGray
-    Colors.FrameColor = clGray
-    Colors.ToolPanelHeaderColorFrom = clWhite
-    Colors.ToolPanelHeaderColorTo = clGray
-    StyleManager = npStyleManager
-    ParentStyleManager = False
-    SplitterHeight = 0
-    MaximizedCount = 2
-    NavPanelFont.Charset = DEFAULT_CHARSET
-    NavPanelFont.Color = clWindowText
-    NavPanelFont.Height = -11
-    NavPanelFont.Name = 'Verdana'
-    NavPanelFont.Style = [fsBold]
-    NavPanelHotTrackFont.Charset = DEFAULT_CHARSET
-    NavPanelHotTrackFont.Color = clWindow
-    NavPanelHotTrackFont.Height = -11
-    NavPanelHotTrackFont.Name = 'Verdana'
-    NavPanelHotTrackFont.Style = [fsBold]
-    Resizable = False
-    object npNotifications: TJvNavPanelPage
-      Left = 0
-      Top = 0
-      Width = 264
-      Height = 260
-      Background.Stretch = False
-      Background.Proportional = False
-      Background.Center = False
-      Background.Tile = False
-      Background.Transparent = False
-      Color = clGray
+    HotTrack = True
+    MultiLine = True
+    Style = tsButtons
+    TabOrder = 1
+    ClientBorderWidth = 0
+    ParentColor = False
+    Color = clGray
+    object tsNotification: TTabSheet
       Caption = 'Notification'
       object lblWtSeconds: TLabel
         Left = 160
-        Top = 85
+        Top = 69
         Width = 42
         Height = 13
         Caption = 'Seconds'
@@ -346,7 +304,7 @@ object Frm_Options: TFrm_Options
       end
       object lblWtMinutes: TLabel
         Left = 160
-        Top = 60
+        Top = 44
         Width = 37
         Height = 13
         Caption = 'Minutes'
@@ -359,7 +317,7 @@ object Frm_Options: TFrm_Options
       end
       object lblWtHours: TLabel
         Left = 160
-        Top = 35
+        Top = 19
         Width = 28
         Height = 13
         Caption = 'Hours'
@@ -372,7 +330,7 @@ object Frm_Options: TFrm_Options
       end
       object lblWt: TLabel
         Left = 5
-        Top = 35
+        Top = 19
         Width = 90
         Height = 13
         AutoSize = False
@@ -386,7 +344,7 @@ object Frm_Options: TFrm_Options
       end
       object lblNotifyWtBtMessageCounter: TLabel
         Left = 220
-        Top = 165
+        Top = 149
         Width = 35
         Height = 13
         Alignment = taRightJustify
@@ -400,7 +358,7 @@ object Frm_Options: TFrm_Options
       end
       object lblNotifyWtBtMessage: TLabel
         Left = 5
-        Top = 165
+        Top = 149
         Width = 90
         Height = 13
         AutoSize = False
@@ -414,66 +372,47 @@ object Frm_Options: TFrm_Options
       end
       object seWtSeconds: TSpinEdit
         Left = 105
-        Top = 80
+        Top = 64
         Width = 49
         Height = 22
         MaxValue = 59
         MinValue = 0
-        TabOrder = 3
+        TabOrder = 0
         Value = 0
       end
       object seWtMinutes: TSpinEdit
         Left = 105
-        Top = 55
+        Top = 39
         Width = 49
         Height = 22
         MaxValue = 59
         MinValue = 0
-        TabOrder = 2
+        TabOrder = 1
         Value = 0
       end
       object seWtHours: TSpinEdit
         Left = 105
-        Top = 30
+        Top = 14
         Width = 49
         Height = 22
         MaxValue = 23
         MinValue = 0
-        TabOrder = 1
+        TabOrder = 2
         Value = 0
       end
       object memoNotifyWtBtMessage: TMemo
         Left = 5
-        Top = 180
+        Top = 164
         Width = 250
         Height = 65
         MaxLength = 250
-        TabOrder = 4
+        ScrollBars = ssVertical
+        TabOrder = 3
         OnChange = memoNotifyWtBtMessageChange
-      end
-      object cbNotifyWt: TCheckBox
-        Left = 5
-        Top = 53
-        Width = 90
-        Height = 17
-        Hint = 
-          'If this is checked, a BallonTip will appear when this amount of ' +
-          'time has passed.'
-        Caption = 'Notify Me!'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWhite
-        Font.Height = -11
-        Font.Name = 'MS Sans Serif'
-        Font.Style = []
-        ParentFont = False
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
-        OnClick = cbNotifyWtClick
       end
       object editNotifyWtBtTitle: TLabeledEdit
         Left = 5
-        Top = 136
+        Top = 120
         Width = 250
         Height = 21
         EditLabel.Width = 79
@@ -488,24 +427,35 @@ object Frm_Options: TFrm_Options
         EditLabel.ParentColor = False
         EditLabel.ParentFont = False
         EditLabel.Transparent = True
-        TabOrder = 6
+        TabOrder = 4
+      end
+      object cbNotifyWt: TCheckBox
+        Left = 5
+        Top = 37
+        Width = 90
+        Height = 17
+        Hint = 
+          'If this is checked, a BallonTip will appear when this amount of ' +
+          'time has passed.'
+        Caption = 'Notify Me!'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -11
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        ParentFont = False
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 5
+        OnClick = cbNotifyWtClick
       end
     end
-    object npVarious: TJvNavPanelPage
-      Left = 0
-      Top = 0
-      Width = 264
-      Height = 260
-      Background.Stretch = False
-      Background.Proportional = False
-      Background.Center = False
-      Background.Tile = False
-      Background.Transparent = False
-      Color = clGray
+    object tsVarious: TTabSheet
       Caption = 'Various'
+      ImageIndex = 1
       object lblHotKeyNoon: TLabel
         Left = 5
-        Top = 140
+        Top = 124
         Width = 250
         Height = 13
         AutoSize = False
@@ -519,7 +469,7 @@ object Frm_Options: TFrm_Options
       end
       object lblFadeSpeed: TLabel
         Left = 5
-        Top = 50
+        Top = 34
         Width = 61
         Height = 13
         Caption = 'Fade Speed:'
@@ -532,7 +482,7 @@ object Frm_Options: TFrm_Options
       end
       object lblFadeSlow: TLabel
         Left = 90
-        Top = 50
+        Top = 34
         Width = 21
         Height = 13
         Caption = 'slow'
@@ -545,7 +495,7 @@ object Frm_Options: TFrm_Options
       end
       object lblFadeFast: TLabel
         Left = 230
-        Top = 50
+        Top = 34
         Width = 17
         Height = 13
         Alignment = taRightJustify
@@ -557,87 +507,115 @@ object Frm_Options: TFrm_Options
         Font.Style = []
         ParentFont = False
       end
-      object btnBrowse: TSpeedButton
-        Left = 237
-        Top = 206
+      object btnBrowse: TJvTransparentButton
+        Left = 235
+        Top = 190
         Width = 20
         Height = 20
-        Caption = '...'
-        Flat = True
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWhite
-        Font.Height = -11
-        Font.Name = 'MS Sans Serif'
-        Font.Style = [fsBold]
-        ParentFont = False
-      end
-      object cbAutoRun: TCheckBox
-        Left = 5
-        Top = 110
-        Width = 250
-        Height = 17
-        Caption = 'Launch Automatically With Windows'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWhite
-        Font.Height = -11
-        Font.Name = 'MS Sans Serif'
-        Font.Style = []
-        ParentFont = False
-        TabOrder = 3
+        AutoGray = False
+        BorderWidth = 0
+        HotTrackFont.Charset = DEFAULT_CHARSET
+        HotTrackFont.Color = clWindowText
+        HotTrackFont.Height = -11
+        HotTrackFont.Name = 'MS Sans Serif'
+        HotTrackFont.Style = []
+        FrameStyle = fsNone
+        ShowPressed = False
+        OnClick = btnBrowseClick
+        Glyph.Data = {
+          36080000424D3608000000000000360000002800000020000000100000000100
+          20000000000000080000120B0000120B00000000000000000000FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF5D
+          3100FF572500FF572500FF572500FF572500FF572500FF572500FF572500FF57
+          2500FF572500FF572500FF572500FF572500FF5D3100FF00FF00FF00FF009898
+          9800929292009292920092929200929292009292920092929200929292009292
+          92009292920092929200929292009292920098989800FF00FF00FF00FF00FF57
+          2500E8C1AC00E2DACD00E1D8C700E1D5C100E1D5C100E0D3BC00DFD0B600DFD0
+          B600DECEB000DECBAA00DECBAA00E5B59200FF572500FF00FF00FF00FF009292
+          9200CACACA00D7D7D700D4D4D400D1D1D100D1D1D100CECECE00CACACA00CACA
+          CA00C7C7C700C4C4C400C4C4C400BBBBBB0092929200FF00FF00FF00FF00FF57
+          2500E3DDD300E2DACD00E2DACD00E1D8C700E1D5C100E1D5C100E0D3BC00E0D3
+          BC00DFD0B600DECEB000DECEB000DECEB000FF572500FF00FF00FF00FF009292
+          9200DBDBDB00D7D7D700D7D7D700D4D4D400D1D1D100D1D1D100CECECE00CECE
+          CE00CACACA00C7C7C700C7C7C700C7C7C70092929200FF00FF00FF00FF00FF57
+          2500C4D6D20000A0AA0000A0AA0000A0AA0000A0AA0000A0AA0000A0AA0000A0
+          AA0000A0AA006CBAB300DFD0B600DECEB000FF572500FF00FF00FF00FF009292
+          9200CDCDCD005555550055555500555555005555550055555500555555005555
+          55005555550093939300CACACA00C7C7C70092929200FF00FF00FF00FF00FF57
+          250000A0AA000BADBA0043E4F50042E3F40040DFF1003EDAEE003CD7EB003BD3
+          E9003AD2E800049EA800DFD0B600DECEB000FF572500FF00FF00FF00FF009292
+          920055555500626262009C9C9C009B9B9B009898980096969600939393009292
+          92009191910056565600CACACA00C7C7C70092929200FF00FF00FF00FF00FF57
+          250004A9B4000CAFBB0025C9D60044E7F60041DFF20040DFF1003FDBEE003CD6
+          EB003BD3E9000EACB90044ADAE00DFD0B600FF572500FF00FF00FF00FF009292
+          92005C5C5C00636363007D7D7D009D9D9D009999990098989800969696009393
+          9300929292006363630079797900CACACA0092929200FF00FF00FF00FF00FF57
+          250004A9B40014CAD7000CAFBB0063DFEB0043E4F50042E3F40040DFF1003EDA
+          EE003CD7EB0021BFCE009EC3B4007ABBB300FF572500FF00FF00FF00FF009292
+          92005C5C5C007575750063636300A7A7A7009C9C9C009B9B9B00989898009696
+          96009393930077777700B0B0B0009A9A9A0092929200FF00FF00FF00FF00FF57
+          250008B1BC0022F1FE0017D1DF0015BDC9000CAFBB000CAFBB000BADBA0009AA
+          B80008A7B600039BA50012A0A7002FAAAF00FF572500FF00FF00FF00FF009292
+          920062626200909090007B7B7B006F6F6F006363630063636300626262006060
+          60005F5F5F00545454005C5C5C006F6F6F0092929200FF00FF00FF00FF00FF57
+          25000BB9C40065F0F90022F1FE0020EDFB001DE8F7001AE2F3001AE2F30018DC
+          F00015D6EC0003A6B000AECEC400C6D0C000FF572500FF00FF00FF00FF009292
+          920067676700AFAFAF00909090008D8D8D008A8A8A0086868600868686008484
+          84008080800059595900BEBEBE00C8C8C80092929200FF00FF00FF00FF00FF57
+          25000DBFCB0094EFF70048F1FB0022F1FE0034D9E30015C6D00019C5CF0019C4
+          CE0018C3CE0003A6B000E2DACD00E1D8C700FF572500FF00FF00FF00FF009292
+          92006C6C6C00C5C5C500A1A1A100909090008B8B8B0072727200747474007373
+          73007373730059595900D7D7D700D4D4D40092929200FF00FF00FF00FF00FF57
+          2500D9DDD80011C8D3000FC2CD0009B5C00060BBBE00E4E0DA00E4DFD800E4DF
+          D800E3DDD300E2DACD00E2DACD00E2DACD00FF572500FF00FF00FF00FF009292
+          9200DADADA00727272006E6E6E00646464008F8F8F00DFDFDF00DEDEDE00DEDE
+          DE00DBDBDB00D7D7D700D7D7D700D7D7D70092929200FF00FF00FF00FF00FF67
+          3A00FFBCA700E9CEC600E9CEC600E9CEC600E9CEC600E9CEC500E9CEC600E8CC
+          BF00E7CBBA00E7CBBA00E6C9B600FCBFAC00E7481C00FF00FF00FF00FF009C9C
+          9C00D3D3D300D7D7D700D7D7D700D7D7D700D7D7D700D7D7D700D7D7D700D3D3
+          D300D0D0D000D0D0D000CECECE00D4D4D40081818100FF00FF00FF00FF00FF77
+          5200FF714A00FF6E4700FF6B4300FF694100FF653C00FF603700FE5A3000F859
+          3000F4583000F25830000000FD00413EE700F25E3800FF00FF00FF00FF00A8A8
+          A800A4A4A400A3A3A300A1A1A100A0A0A0009D9D9D009B9B9B00979797009494
+          940092929200919191007E7E7E009292920095959500FF00FF00FF00FF00FF00
+          FF00FF775200FF775200FF744F00FF714B00FF6F4900FF6B4400FF663F00FE60
+          3800F85F3800F45F3800B473A6006625A600FF00FF00FF00FF00FF00FF00FF00
+          FF00A8A8A800A8A8A800A7A7A700A5A5A500A4A4A400A1A1A1009F9F9F009B9B
+          9B0098989800969696009393930065656500FF00FF00FF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+          FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00}
+        NumGlyphs = 2
       end
       object tbFadeSpeed: TTrackBar
         Left = 120
-        Top = 40
+        Top = 24
         Width = 105
         Height = 30
         Min = 1
         Position = 1
-        TabOrder = 1
+        TabOrder = 0
         ThumbLength = 10
         TickMarks = tmBoth
       end
       object hcNoon: THotKey
         Left = 5
-        Top = 160
+        Top = 144
         Width = 250
         Height = 19
-        HotKey = 57376
+        HotKey = 49229
         InvalidKeys = []
-        Modifiers = [hkShift, hkCtrl, hkAlt, hkExt]
-        TabOrder = 4
-      end
-      object cbStartMinimized: TCheckBox
-        Left = 5
-        Top = 80
-        Width = 250
-        Height = 17
-        Caption = 'Start Minimized'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWhite
-        Font.Height = -11
-        Font.Name = 'MS Sans Serif'
-        Font.Style = []
-        ParentFont = False
-        TabOrder = 2
-      end
-      object cbFade: TCheckBox
-        Left = 5
-        Top = 30
-        Width = 250
-        Height = 17
-        Caption = 'Fade In/Out on Show/Hide'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWhite
-        Font.Height = -11
-        Font.Name = 'MS Sans Serif'
-        Font.Style = []
-        ParentFont = False
-        TabOrder = 0
-        OnClick = cbFadeClick
+        Modifiers = [hkCtrl, hkAlt]
+        TabOrder = 1
+        OnChange = hcNoonChange
       end
       object editLogFilePath: TLabeledEdit
         Left = 5
-        Top = 206
+        Top = 190
         Width = 228
         Height = 21
         EditLabel.Width = 56
@@ -652,48 +630,52 @@ object Frm_Options: TFrm_Options
         EditLabel.ParentColor = False
         EditLabel.ParentFont = False
         EditLabel.Transparent = True
-        TabOrder = 6
+        ReadOnly = True
+        TabOrder = 2
+      end
+      object cbStartMinimized: TCheckBox
+        Left = 5
+        Top = 64
+        Width = 250
+        Height = 17
+        Caption = 'Start Minimized'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -11
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 3
+      end
+      object cbFade: TCheckBox
+        Left = 5
+        Top = 14
+        Width = 250
+        Height = 17
+        Caption = 'Fade In/Out on Show/Hide'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -11
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 4
+        OnClick = cbFadeClick
+      end
+      object cbAutoRun: TCheckBox
+        Left = 5
+        Top = 94
+        Width = 250
+        Height = 17
+        Caption = 'Launch Automatically With Windows'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -11
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 5
       end
     end
-  end
-  object npStyleManager: TJvNavPaneStyleManager
-    Colors.ButtonColorFrom = clWhite
-    Colors.ButtonColorTo = clSilver
-    Colors.ButtonHotColorFrom = clSilver
-    Colors.ButtonHotColorTo = clGray
-    Colors.ButtonSelectedColorFrom = clGray
-    Colors.ButtonSelectedColorTo = clSilver
-    Colors.SplitterColorFrom = clSilver
-    Colors.SplitterColorTo = clGray
-    Colors.DividerColorFrom = clSilver
-    Colors.DividerColorTo = clGray
-    Colors.HeaderColorFrom = clGray
-    Colors.HeaderColorTo = clGray
-    Colors.FrameColor = clGray
-    Colors.ToolPanelHeaderColorFrom = clWhite
-    Colors.ToolPanelHeaderColorTo = clGray
-    Fonts.NavPanelFont.Charset = DEFAULT_CHARSET
-    Fonts.NavPanelFont.Color = clWindowText
-    Fonts.NavPanelFont.Height = -11
-    Fonts.NavPanelFont.Name = 'Verdana'
-    Fonts.NavPanelFont.Style = [fsBold]
-    Fonts.NavPanelHotTrackFont.Charset = DEFAULT_CHARSET
-    Fonts.NavPanelHotTrackFont.Color = clWindow
-    Fonts.NavPanelHotTrackFont.Height = -11
-    Fonts.NavPanelHotTrackFont.Name = 'Verdana'
-    Fonts.NavPanelHotTrackFont.Style = [fsBold]
-    Fonts.DividerFont.Charset = DEFAULT_CHARSET
-    Fonts.DividerFont.Color = clWindowText
-    Fonts.DividerFont.Height = -11
-    Fonts.DividerFont.Name = 'Verdana'
-    Fonts.DividerFont.Style = []
-    Fonts.HeaderFont.Charset = DEFAULT_CHARSET
-    Fonts.HeaderFont.Color = clWindow
-    Fonts.HeaderFont.Height = -16
-    Fonts.HeaderFont.Name = 'Arial'
-    Fonts.HeaderFont.Style = [fsBold]
-    Theme = nptCustom
-    Left = 65521
-    Top = 65521
   end
 end

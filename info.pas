@@ -17,6 +17,7 @@ type
     lblCopyright: TLabel;
     lblVersion: TLabel;
     btnClose: TJvSpeedButton;
+    procedure _MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure FormCreate(Sender: TObject);
     procedure lblHomepageClick(Sender: TObject);
     procedure lblEmailClick(Sender: TObject);
@@ -33,6 +34,15 @@ implementation
 uses globalDefinitions;
 
 {$R *.dfm}
+
+procedure TFrm_Info._MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+begin
+  if (ssLeft in Shift) then
+  begin
+    ReleaseCapture;
+    SendMessage(Self.Handle, WM_SYSCOMMAND, SC_MOVE+1,0);
+  end;
+end;
 
 procedure TFrm_Info.FormCreate(Sender: TObject);
 begin

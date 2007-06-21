@@ -3,10 +3,10 @@ unit main;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ShellApi, Buttons, Menus, ExtCtrls, AppEvnts,
-  HotKeyManager, ImgList, CoolTrayIcon, jpeg, JvExControls, JvButton,
-  JvTransparentButton;
+  Windows, Messages, SysUtils, Forms, Dialogs, AppEvnts,
+  HotKeyManager, ImgList, Controls, CoolTrayIcon, ExtCtrls,
+  Menus, JvExControls, JvButton, JvTransparentButton,
+  StdCtrls, jpeg, Classes;
 
 const
   IC_CLICK = WM_APP + 201;
@@ -29,6 +29,7 @@ type
     btnInfo: TJvTransparentButton;
     btnMinimize: TJvTransparentButton;
     btnOptions: TJvTransparentButton;
+    btnLogMessage: TJvTransparentButton;
     procedure btnOptionsClick(Sender: TObject);
     procedure tmrCounterTimer(Sender: TObject);
     procedure pmNoonClick(Sender: TObject);
@@ -49,12 +50,13 @@ type
     procedure FormHide(Sender: TObject);
     procedure _MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure _Close(Sender: TObject);
+    procedure btnLogMessageClick(Sender: TObject);
   protected
   private
     { Private declarations }
     procedure Init;
     procedure FadeForm(Action:String);
-    procedure getOptions;
+    procedure GetOptions;
     procedure StartLog;
     procedure Noon(IsNoon:Boolean);
   public
@@ -67,7 +69,7 @@ var
 
 implementation
 
-uses globalDefinitions, reg, options, info;
+uses globalDefinitions, functions, reg, options, info, logmessage, Math;
 
 var
   mHandle:THandle;
@@ -76,6 +78,7 @@ var
 
   // setting variables
   LogFilePath:String;
+  LogMessage:String;
   Wt:Integer;
   WtOver:Boolean; // check if the set worktime is allready over
   NotifyWt:Boolean;
@@ -88,6 +91,7 @@ var
   AutoRun:Boolean;
 
   // various variables
+  WeekDays:array[1..7] of String = ('Sun','Mon','Tue','Wed','Thu','Fri','Sat');
   FadeAction:String; // show, hide or close with fade effect
 
 {$R *.dfm}
@@ -103,7 +107,7 @@ var
 procedure TFrm_Main.Init;
 begin
   NoonTick := 0;
-  StartedTick := GetTickCount; // Seconds since computer running
+  StartedTick := GetTickCount; // Seconds since computer is running
   WtOver := False;
 end;
 
@@ -132,15 +136,13 @@ begin
   if FadeAction = 'auto' then
     if Visible then FadeAction := 'hide' else FadeAction := 'show';
 
-  if FadeAction = 'show' then
-    AlphaBlendValue := 0
-  else
-  if FadeAction = 'hide' then
-    AlphaBlendValue := 255;
+  if FadeAction = 'show' then AlphaBlendValue := 0 else
+  if FadeAction = 'hide' then AlphaBlendValue := 255;
+
   tmrFade.Enabled := True;
 end;
 
-procedure TFrm_Main.getOptions;
+procedure TFrm_Main.GetOptions;
 begin
   Wt := reg.getInteger(defRegKey,'Wt',defWt);
   if Wt = defWt then reg.setInteger(defRegKey,'Wt',defWt);
@@ -165,43 +167,48 @@ end;
 
 procedure TFrm_Main.StartLog;
 begin
-// FILE
-  if FileExists(LogFilePath) then
-  begin
-    AssignFile(Log, LogFilePath);
-    Append(Log);
-  end
-  else
-  begin
-    LogFilePath := defLogFilePath;
-    AssignFile(Log, LogFilePath);
-    Rewrite(Log);
-  end;
-  WriteLn(Log, '');
+  try
+    if FileOpen(LogFilePath,fmOpenReadWrite) <> -1 then
+    begin
+      AssignFile(Log, LogFilePath);
+      if FileExists(LogFilePath) then
+        Append(Log)
+      else
+        Rewrite(Log);
+      WriteLn(Log, '');
 
-  WriteLn(Log, '__ ' + FormatDateTime('dd.mm.yyyy', Now) + ' ________________');
-  WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Work Started');
-  CloseFile(Log);
+      WriteLn(Log, '__ ' + FormatDateTime('dd.mm.yyyy', Now) + ' ' + WeekDays[DayOfWeek(Now)] + ' ____________');
+      WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Work Started');
+      CloseFile(Log);
+    end
+    else
+      Close;
+  except
+    Close;
+  end;
 end;
 
 procedure TFrm_Main.Noon(IsNoon:Boolean);
 begin
-  Append(Log);
-  if IsNoon then
-  begin
+  try
+    Append(Log);
     NoonTick := GetTickCount - NoonTick;
-    tmrCounter.Enabled := False;
-    TrayIcon.IconIndex := 1;
-    WriteLn(log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Noon Started');
-  end
-  else
-  begin
-    NoonTick := GetTickCount - NoonTick;
-    tmrCounter.Enabled := True;
-    TrayIcon.IconIndex := 0;
-    WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Noon Finished');
+    if IsNoon then
+    begin
+      tmrCounter.Enabled := False;
+      TrayIcon.IconIndex := 1;
+      WriteLn(log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Noon Started');
+    end
+    else
+    begin
+      tmrCounter.Enabled := True;
+      TrayIcon.IconIndex := 0;
+      WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Noon Finished');
+    end;
+    CloseFile(Log);
+  except
+    Close;
   end;
-  CloseFile(Log);
 end;
 
 {*******************************************************************************
@@ -228,14 +235,7 @@ end;
 
 procedure TFrm_Main.FormActivate(Sender: TObject);
 begin
-  SetWindowLong(Application.Handle,GWL_EXSTYLE,WS_EX_TOOLWINDOW);
-  getOptions;
-
-  hkm.AddHotKey(HotKeyNoon);
-  StartLog;
-  if not StartMinimized then
-    if Fade then FadeForm('show') else Show
-  else AlphaBlendValue := 0;
+  //FormActivate code in TrayIcon.OnStartUp()
 end;
 
 procedure TFrm_Main.btnOptionsClick(Sender: TObject);
@@ -264,6 +264,19 @@ begin
 
     if Frm_Options.ShowModal = mrOK then
     begin
+      if (LogFilePath <> editLogFilePath.Text) and (editLogFilePath.Text <> '') then
+      begin
+        if CopyFile(pChar(LogFilePath),pChar(editLogFilePath.Text),False) then
+        begin
+          DeleteFile(LogFilePath);
+        end
+        else
+        begin
+          editLogFilePath.Text := LogFilePath;
+          ShowMessage('Couldn''t move LogFile!');
+        end;
+      end;
+
       NotifyWt := cbNotifyWt.Checked;
       reg.setBoolean(defRegKey,'NotifyWt',NotifyWt);
       if NotifyWt then
@@ -291,7 +304,10 @@ begin
       LogFilePath := editLogFilePath.Text;
       reg.setString(defRegKey,'LogFilePath',LogFilePath);
       AutoRun := cbAutoRun.Checked;
-      if AutoRun then reg.setString(runRegKey,progName,ParamStr(0)) else reg.delValue(runRegKey,progName);
+      if AutoRun then
+        reg.setString(runRegKey,progName,ParamStr(0))
+      else
+        reg.delValue(runRegKey,progName);
     end;
     hkm.AddHotKey(HotKeyNoon);
   end;
@@ -346,33 +362,45 @@ end;
 
 procedure TFrm_Main._Close(Sender: TObject);
 begin
-  tmrCounter.Enabled := False;
-  if Fade then FadeForm('close') else Close;
+  if Frm_LogMessage.ShowModal = mrOk then
+  begin
+    tmrCounter.Enabled := False;
+    if Fade then FadeForm('close') else Close;
+    LogMessage := Trim(Frm_LogMessage.memoLogMessage.Text);
+  end;
 end;
 
 procedure TFrm_Main.btnInfoClick(Sender: TObject);
 begin
-  Application.CreateForm(TFrm_info, Frm_info);
+  Application.CreateForm(TFrm_Info, Frm_Info);
   try
-    Frm_info.ShowModal;
+    Frm_Info.ShowModal;
   finally
-    Frm_info.Release;
+    Frm_Info.Release;
   end;
 end;
 
 procedure TFrm_Main.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
-  AssignFile(Log, LogFilePath);
-  Append(Log);
-  WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Work Finished');
-  WriteLn(Log, '------------------------------');
-  WriteLn(Log, 'Total working hours   : ' + FloatToStr(h));
-  WriteLn(Log, 'Total working minutes : ' + FloatToStr(m));
-  WriteLn(Log, 'Total working seconds : ' + FloatToStr(s));
-  WriteLn(Log, '------------------------------');
-  CloseFile(Log);
-  hkm.ClearHotKeys;
+  try
+    if FileOpen(LogFilePath,fmOpenReadWrite) <> -1 then
+    begin
+      AssignFile(Log, LogFilePath);
+      Append(Log);
+      WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Work Finished');
+      WriteLn(Log, '------------------------------');
+      WriteLn(Log, 'Comment:');
+      WriteLn(Log, LogMessage);
+      WriteLn(Log, '------------------------------');
+      WriteLn(Log, 'Total working time:');
+      WriteLn(Log, ' ' + FloatToStr(h) + 'h ' + FloatToStr(m) + 'm ' + FloatToStr(s) + 's');
+      WriteLn(Log, '------------------------------');
+      CloseFile(Log);
+    end;
+  finally
+    hkm.ClearHotKeys;
+  end;
 end;
 
 procedure TFrm_Main.hkmHotKeyPressed(HotKey: Cardinal; Index: Word);
@@ -383,9 +411,8 @@ end;
 
 procedure TFrm_Main.trayIconClick(Sender: TObject);
 begin
-  if Fade then
-    FadeForm('auto')
-  else if Visible then Hide else Show;
+  if Fade then FadeForm('auto') else
+    if Visible then Hide else Show;
 end;
 
 procedure TFrm_Main.appEventsException(Sender: TObject; E: Exception);
@@ -436,9 +463,7 @@ begin
     if AlphaBlendValue >= FadeSpeed then
       AlphaBlendValue := AlphaBlendValue - FadeSpeed
     else
-    begin
       Close;
-    end;
   end;
 end;
 
@@ -446,7 +471,15 @@ procedure TFrm_Main.trayIconStartup(Sender: TObject;
   var ShowMainForm: Boolean);
 begin
   ShowMainForm := False;
-  Frm_Main.FormActivate(Frm_Main);
+
+  SetWindowLong(Application.Handle,GWL_EXSTYLE,WS_EX_TOOLWINDOW); //remove from taskbar
+  GetOptions;
+
+  hkm.AddHotKey(HotKeyNoon);
+  StartLog;
+  if not StartMinimized then
+    if Fade then FadeForm('show') else Show
+  else AlphaBlendValue := 0;
 end;
 
 procedure TFrm_Main.FormShow(Sender: TObject);
@@ -459,13 +492,24 @@ begin
   pmShowHide.Caption := 'Show';
 end;
 
-Initialization
-  Frm_Main.Init;
+procedure TFrm_Main.btnLogMessageClick(Sender: TObject);
+var
+  old:String;
+begin
+  old := Frm_LogMessage.memoLogMessage.Text;
+  if Frm_LogMessage.ShowModal <> mrOk then
+  begin
+    Frm_LogMessage.memoLogMessage.Text := old;
+  end;
+end;
+
+initialization
 // Check if WorkTime.exe is already running
   mHandle := CreateMutex(nil,True,'Frm_Main');
   if GetLastError = ERROR_ALREADY_EXISTS then Halt; // Already running
+  Frm_Main.Init;
 
 finalization
-if mHandle <> 0 then CloseHandle(mHandle)
+  if mHandle <> 0 then CloseHandle(mHandle);
 
 end.

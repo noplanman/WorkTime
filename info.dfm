@@ -409,6 +409,7 @@ object Frm_Info: TFrm_Info
       FB3FFE52E7E3FF00EA0349CF6119EF8F5DB912FE5D09C9EB8C9FB4E873A19AE4
       0ED9DF756DB6DE7D3C34AB037E2778EE3C4E3DDFF4D0008EBFCB4003F6F539EB
       8F8674EA010950290124A493DCAF97091DAA23395051CA801B03D74A807FFFD9}
+    OnMouseMove = _MouseMove
   end
   object lblVersion: TLabel
     Left = 4
@@ -424,6 +425,7 @@ object Frm_Info: TFrm_Info
     Font.Style = []
     ParentFont = False
     Transparent = True
+    OnMouseMove = _MouseMove
   end
   object lblName: TLabel
     Left = 4
@@ -439,6 +441,7 @@ object Frm_Info: TFrm_Info
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = True
+    OnMouseMove = _MouseMove
   end
   object lblHomepage: TLabel
     Left = 4
@@ -456,6 +459,7 @@ object Frm_Info: TFrm_Info
     ParentFont = False
     Transparent = True
     OnClick = lblHomepageClick
+    OnMouseMove = _MouseMove
   end
   object lblEmail: TLabel
     Left = 4
@@ -473,6 +477,7 @@ object Frm_Info: TFrm_Info
     ParentFont = False
     Transparent = True
     OnClick = lblEmailClick
+    OnMouseMove = _MouseMove
   end
   object lblCopyright: TLabel
     Left = 4
@@ -488,6 +493,7 @@ object Frm_Info: TFrm_Info
     Font.Style = []
     ParentFont = False
     Transparent = True
+    OnMouseMove = _MouseMove
   end
   object lblAuthor: TLabel
     Left = 4
@@ -503,6 +509,7 @@ object Frm_Info: TFrm_Info
     Font.Style = []
     ParentFont = False
     Transparent = True
+    OnMouseMove = _MouseMove
   end
   object btnClose: TJvSpeedButton
     Left = 126

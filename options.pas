@@ -3,10 +3,10 @@ unit options;
 interface
 
 uses
-  Windows, Messages, SysUtils, Forms, Dialogs, StdCtrls, EButton, Spin,
-  ExtCtrls, Classes, Controls, JvButton, JvTransparentButton,
-  JvComponentBase, JvNavigationPane, ComCtrls, Buttons, JvPageList,
-  JvExControls, JvSpeedButton, JvGradient, jpeg;
+  Windows, Messages, SysUtils, Forms, Dialogs, StdCtrls, jpeg,
+  ExtCtrls, Classes, Controls, ComCtrls, JvExComCtrls, JvComCtrls,
+  JvSpeedButton, JvGradient, JvExControls, JvButton, JvTransparentButton,
+  Spin;
 
 type
   TFrm_Options = class(TForm)
@@ -33,23 +33,24 @@ type
     lblFadeFast: TLabel;
     cbStartMinimized: TCheckBox;
     cbAutoRun: TCheckBox;
-    npOptions: TJvNavigationPane;
-    npNotifications: TJvNavPanelPage;
-    npVarious: TJvNavPanelPage;
-    npStyleManager: TJvNavPaneStyleManager;
     imgTitle: TImage;
     lblTitle: TLabel;
     gradButtons: TJvGradient;
     editNotifyWtBtTitle: TLabeledEdit;
-    btnBrowse: TSpeedButton;
     editLogFilePath: TLabeledEdit;
     btnClose: TJvTransparentButton;
+    pcOptions: TJvPageControl;
+    tsNotification: TTabSheet;
+    tsVarious: TTabSheet;
+    btnBrowse: TJvTransparentButton;
     procedure cbNotifyWtClick(Sender: TObject);
     procedure memoNotifyWtBtMessageChange(Sender: TObject);
     procedure cbFadeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure _MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure _Close(Sender: TObject);
+    procedure btnBrowseClick(Sender: TObject);
+    procedure hcNoonChange(Sender: TObject);
   private
     { Private declarations }
   public
@@ -60,7 +61,7 @@ var
   Frm_Options: TFrm_Options;
 
 implementation
-uses globalDefinitions, reg, Math, functions;
+uses globalDefinitions, reg, hotkeymanager, Math, functions;
 
 {$R *.dfm}
 
@@ -97,6 +98,11 @@ end;
 procedure TFrm_Options.FormCreate(Sender: TObject);
 begin
   lblTitle.Caption := Caption;
+  Top := Screen.WorkAreaHeight - Height;
+  Left := Screen.WorkAreaWidth - Width;
+  lblNotifyWtBtMessageCounter.Caption :=
+    IntToStr(Length(memoNotifyWtBtMessage.Text)) + ' / ' +
+    IntToStr(memoNotifyWtBtMessage.MaxLength);
 end;
 
 procedure TFrm_Options.cbNotifyWtClick(Sender: TObject);
@@ -110,7 +116,9 @@ end;
 
 procedure TFrm_Options.memoNotifyWtBtMessageChange(Sender: TObject);
 begin
-  lblNotifyWtBtMessageCounter.Caption := IntToStr(Length(memoNotifyWtBtMessage.Text))+' / 250';
+  lblNotifyWtBtMessageCounter.Caption :=
+    IntToStr(Length(memoNotifyWtBtMessage.Text)) + ' / ' +
+    IntToStr(memoNotifyWtBtMessage.MaxLength);
 end;
 
 procedure TFrm_Options.cbFadeClick(Sender: TObject);
@@ -121,6 +129,28 @@ end;
 procedure TFrm_Options._Close(Sender: TObject);
 begin
   Self.ModalResult := mrCancel;
+end;
+
+procedure TFrm_Options.btnBrowseClick(Sender: TObject);
+var
+  sd : TSaveDialog;
+begin
+  sd := TSaveDialog.Create(Self);
+  sd.InitialDir := ExtractFileDir(editLogFilePath.Text);
+  sd.FileName := ExtractFileName(editLogFilePath.Text);
+  if sd.Execute then
+  begin
+    editLogFilePath.Text := sd.FileName;
+  end;
+end;
+
+procedure TFrm_Options.hcNoonChange(Sender: TObject);
+begin
+  if not HotKeyAvailable(hcNoon.HotKey) then
+  begin
+    ShowMessage('HotKey in use!');
+    hcNoon.HotKey := 0;
+  end;
 end;
 
 end.

@@ -134,13 +134,24 @@ end;
 procedure TFrm_Options.btnBrowseClick(Sender: TObject);
 var
   sd : TSaveDialog;
+  fh : Integer;
 begin
   sd := TSaveDialog.Create(Self);
+  sd.Options := sd.Options + [ofOverwritePrompt] + [ofPathMustExist];
   sd.InitialDir := ExtractFileDir(editLogFilePath.Text);
   sd.FileName := ExtractFileName(editLogFilePath.Text);
   if sd.Execute then
   begin
-    editLogFilePath.Text := sd.FileName;
+    fh := FileOpen(sd.FileName,fmOpenReadWrite);
+    if fh <> -1 then
+    begin
+      editLogFilePath.Text := sd.FileName;
+    end
+    else
+    begin
+      ShowMessage('Can''t Write File!');
+    end;
+    FileClose(fh);
   end;
 end;
 

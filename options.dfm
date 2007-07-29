@@ -16,6 +16,7 @@ object Frm_Options: TFrm_Options
   FormStyle = fsStayOnTop
   OldCreateOrder = False
   Scaled = False
+  ScreenSnap = True
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -278,7 +279,7 @@ object Frm_Options: TFrm_Options
     Top = 24
     Width = 266
     Height = 261
-    ActivePage = tsVarious
+    ActivePage = tsNotification
     Align = alClient
     HotTrack = True
     MultiLine = True

@@ -286,7 +286,7 @@ object Frm_First: TFrm_First
     object lblMessage: TLabel
       Left = 5
       Top = 6
-      Width = 28
+      Width = 3
       Height = 13
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -414,9 +414,5 @@ object Frm_First: TFrm_First
       ParentFont = False
       TabOrder = 1
     end
-  end
-  object SaveDialog1: TSaveDialog
-    Left = 64
-    Top = 144
   end
 end

@@ -635,6 +635,10 @@ object Frm_Main: TFrm_Main
       Caption = 'Show'
       OnClick = pmShowHideClick
     end
+    object pmOptions: TMenuItem
+      Caption = 'Options'
+      OnClick = pmOptionsClick
+    end
     object pmNoon: TMenuItem
       AutoCheck = True
       Caption = 'Noon'

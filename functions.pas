@@ -12,7 +12,6 @@ function CreateDesktopShortcut(PathObj,PathLink,Desc,Workdir:String):Boolean;
 function GetDesktopFolder:String;
 
 // PROCEDURES
-procedure ForceKillApplication(ARestart: boolean = False);
 
 implementation
 uses
@@ -70,22 +69,6 @@ begin
   begin
     Result := '';
   end;
-end;
-
-procedure ForceKillApplication(ARestart: boolean = False);
-var
-  AStartInfo: TStartupInfo;
-  AProcInfo: TProcessInformation;
-begin
-  if ARestart then
-  begin
-    GetStartupInfo(AStartInfo);
-    FillChar(AProcInfo, SizeOf(TProcessInformation), #0);
-    CreateProcess(nil, GetCommandLine, nil, nil, False,
-      CREATE_NEW_PROCESS_GROUP + NORMAL_PRIORITY_CLASS, nil,
-      PChar(GetCurrentDir), AStartInfo, AProcInfo);
-  end;
-  TerminateProcess(GetCurrentProcess, 1);
 end;
 
 end.

@@ -16,6 +16,7 @@ object Frm_LogMessage: TFrm_LogMessage
   FormStyle = fsStayOnTop
   OldCreateOrder = False
   Scaled = False
+  ScreenSnap = True
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13

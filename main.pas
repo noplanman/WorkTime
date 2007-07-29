@@ -30,6 +30,7 @@ type
     btnMinimize: TJvTransparentButton;
     btnOptions: TJvTransparentButton;
     btnLogMessage: TJvTransparentButton;
+    pmOptions: TMenuItem;
     procedure btnOptionsClick(Sender: TObject);
     procedure tmrCounterTimer(Sender: TObject);
     procedure pmNoonClick(Sender: TObject);
@@ -51,6 +52,7 @@ type
     procedure _MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure _Close(Sender: TObject);
     procedure btnLogMessageClick(Sender: TObject);
+    procedure pmOptionsClick(Sender: TObject);
   protected
   private
     { Private declarations }
@@ -168,23 +170,18 @@ end;
 procedure TFrm_Main.StartLog;
 begin
   try
-    if FileOpen(LogFilePath,fmOpenReadWrite) <> -1 then
-    begin
-      AssignFile(Log, LogFilePath);
-      if FileExists(LogFilePath) then
-        Append(Log)
-      else
-        Rewrite(Log);
-      WriteLn(Log, '');
-
-      WriteLn(Log, '__ ' + FormatDateTime('dd.mm.yyyy', Now) + ' ' + WeekDays[DayOfWeek(Now)] + ' ____________');
-      WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Work Started');
-      CloseFile(Log);
-    end
+    AssignFile(Log, LogFilePath);
+    if FileExists(LogFilePath) then
+      Append(Log)
     else
-      Close;
+      Rewrite(Log);
+    WriteLn(Log, '');
+
+    WriteLn(Log, '__ ' + FormatDateTime('dd.mm.yyyy', Now) + ' ' + WeekDays[DayOfWeek(Now)] + ' ____________');
+    WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Work Started');
+    CloseFile(Log);
   except
-    Close;
+    ShowMessage('Error with LogFile');
   end;
 end;
 
@@ -266,14 +263,17 @@ begin
     begin
       if (LogFilePath <> editLogFilePath.Text) and (editLogFilePath.Text <> '') then
       begin
-        if CopyFile(pChar(LogFilePath),pChar(editLogFilePath.Text),False) then
+        if FileExists(LogFilePath) then
         begin
-          DeleteFile(LogFilePath);
-        end
-        else
-        begin
-          editLogFilePath.Text := LogFilePath;
-          ShowMessage('Couldn''t move LogFile!');
+          if CopyFile(pChar(LogFilePath),pChar(editLogFilePath.Text),False) then
+          begin
+            DeleteFile(LogFilePath);
+          end
+          else
+          begin
+            editLogFilePath.Text := LogFilePath;
+            ShowMessage('Couldn''t move LogFile!');
+          end
         end;
       end;
 
@@ -365,8 +365,8 @@ begin
   if Frm_LogMessage.ShowModal = mrOk then
   begin
     tmrCounter.Enabled := False;
-    if Fade then FadeForm('close') else Close;
     LogMessage := Trim(Frm_LogMessage.memoLogMessage.Text);
+    if Fade then FadeForm('close') else Close;
   end;
 end;
 
@@ -384,20 +384,17 @@ procedure TFrm_Main.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
   try
-    if FileOpen(LogFilePath,fmOpenReadWrite) <> -1 then
-    begin
-      AssignFile(Log, LogFilePath);
-      Append(Log);
-      WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Work Finished');
-      WriteLn(Log, '------------------------------');
-      WriteLn(Log, 'Comment:');
-      WriteLn(Log, LogMessage);
-      WriteLn(Log, '------------------------------');
-      WriteLn(Log, 'Total working time:');
-      WriteLn(Log, ' ' + FloatToStr(h) + 'h ' + FloatToStr(m) + 'm ' + FloatToStr(s) + 's');
-      WriteLn(Log, '------------------------------');
-      CloseFile(Log);
-    end;
+    AssignFile(Log, LogFilePath);
+    Append(Log);
+    WriteLn(Log, ' - ' + FormatDateTime('hh:nn:ss', Now) + ' : Work Finished');
+    WriteLn(Log, '------------------------------');
+    WriteLn(Log, 'Comment:');
+    WriteLn(Log, LogMessage);
+    WriteLn(Log, '------------------------------');
+    WriteLn(Log, 'Total working time:');
+    WriteLn(Log, ' ' + FloatToStr(h) + 'h ' + FloatToStr(m) + 'm ' + FloatToStr(s) + 's');
+    WriteLn(Log, '------------------------------');
+    CloseFile(Log);
   finally
     hkm.ClearHotKeys;
   end;
@@ -501,6 +498,11 @@ begin
   begin
     Frm_LogMessage.memoLogMessage.Text := old;
   end;
+end;
+
+procedure TFrm_Main.pmOptionsClick(Sender: TObject);
+begin
+  btnOptions.Click;  
 end;
 
 initialization

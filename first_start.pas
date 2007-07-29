@@ -21,7 +21,6 @@ type
     btnClose: TJvTransparentButton;
     btnBrowse: TJvTransparentButton;
     pnlMain: TPanel;
-    SaveDialog1: TSaveDialog;
     procedure FormCreate(Sender: TObject);
     procedure btnOkClick(Sender: TObject);
     procedure _Close(Sender: TObject);
@@ -103,8 +102,8 @@ begin
     ShowMessage('Error while writing to registry!');
     exit;
   end;
-
-  ForceKillApplication(True);
+  ShowMessage('Please restart program');
+  Close;
 end;
 
 procedure TFrm_First._Close(Sender: TObject);
@@ -117,7 +116,7 @@ var
   sd : TSaveDialog;
 begin
   sd := TSaveDialog.Create(Self);
-  sd.Options := sd.Options + [ofOverwritePrompt];
+  sd.Options := sd.Options + [ofOverwritePrompt] + [ofPathMustExist];
   sd.InitialDir := ExtractFileDir(editLogFilePath.Text);
   sd.FileName := ExtractFileName(editLogFilePath.Text);
   if sd.Execute then

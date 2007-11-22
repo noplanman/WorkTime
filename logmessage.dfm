@@ -306,6 +306,8 @@ object Frm_LogMessage: TFrm_LogMessage
       ScrollBars = ssVertical
       TabOrder = 0
       OnChange = memoLogMessageChange
+      OnKeyDown = memoLogMessageKeyDown
+      OnKeyPress = memoLogMessageKeyPress
     end
   end
 end

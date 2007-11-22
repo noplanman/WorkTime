@@ -23,6 +23,9 @@ type
     procedure _MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure FormCreate(Sender: TObject);
     procedure memoLogMessageChange(Sender: TObject);
+    procedure memoLogMessageKeyPress(Sender: TObject; var Key: Char);
+    procedure memoLogMessageKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
   public
@@ -86,6 +89,22 @@ begin
   lblLogMessageCounter.Caption :=
     IntToStr(Length(memoLogMessage.Text)) + ' / ' +
     IntToStr(memoLogMessage.MaxLength);
+end;
+
+procedure TFrm_LogMessage.memoLogMessageKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  if (ssCtrl in Shift) and (Key = VK_RETURN) then
+  begin
+    btnOk.Click;
+  end;
+end;
+
+procedure TFrm_LogMessage.memoLogMessageKeyPress(Sender: TObject;
+  var Key: Char);
+begin
+  if Key = #10 then
+    Key := #0;
 end;
 
 end.
